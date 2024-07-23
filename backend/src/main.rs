@@ -1,6 +1,9 @@
 use std::{error::Error, fmt::Display};
 
-use actix_web::{middleware::Logger, App, HttpServer};
+use actix_web::{middleware::Logger, web, App, HttpServer};
+use migration::{Migrator, MigratorTrait};
+use sea_orm::{Database, DatabaseConnection};
+use utils::app_state::AppState;
 
 mod utils;
 mod routes;
@@ -43,9 +46,24 @@ async fn main() -> Result<(), MainError> {
 
     let port = (utils::constants::PORT).clone();
     let address = (utils::constants::ADDRESS).clone();
+    let database_url = (utils::constants::DATABASE_URL).clone();
 
-    HttpServer::new(|| {
+    let db: DatabaseConnection =
+        Database::connect(database_url)
+            .await
+            .map_err(|err| MainError {
+                message: err.to_string(),
+            })?;
+    
+    Migrator::fresh(&db)
+        .await
+        .map_err(|err| MainError {
+            message: err.to_string(),
+        })?;
+
+    HttpServer::new(move || {
         App::new()
+            .app_data(web::Data::new(AppState { db: db.clone() } ))
             .wrap(Logger::default())
             .configure(routes::test_routes::config)
     })

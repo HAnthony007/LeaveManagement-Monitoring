@@ -18,7 +18,7 @@ fn set_address() -> String {
 fn set_db_url() -> String {
     dotenv::dotenv().ok();
     env::var("DATABASE_URL")
-        .unwrap_or("postgres://spat:spatserver@localhost/leave_test".to_string())
+        .unwrap_or("postgres://spat:spatserver@localhost/leave_management".to_string())
 }
 
 fn set_port() -> u16 {
