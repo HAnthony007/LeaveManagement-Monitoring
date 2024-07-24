@@ -22,7 +22,8 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(EMPLOYE::NMatricule).string().not_null())
                     .col(ColumnDef::new(EMPLOYE::IdSupHier).string())
-                    .col(ColumnDef::new(EMPLOYE::IdDep).string().not_null())
+                    .col(ColumnDef::new(EMPLOYE::IdDep).integer())
+                    // .col(ColumnDef::new(EMPLOYE::IdDep).integer().not_null())
                     .col(ColumnDef::new(EMPLOYE::NomEmpl).string().not_null())
                     .col(ColumnDef::new(EMPLOYE::PrenomEmpl).string())
                     .col(
