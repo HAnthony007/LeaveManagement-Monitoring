@@ -10,16 +10,16 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(ETABLISSEMENT::Table)
+                    .table(DEPARTEMENT::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(ETABLISSEMENT::IdEtab)
+                        ColumnDef::new(DEPARTEMENT::IdDep)
                             .integer()
                             .not_null()
-                            .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(ETABLISSEMENT::NomEtab).string().not_null())
+                    .col(ColumnDef::new(DEPARTEMENT::NomDep).string().not_null())
+                    .col(ColumnDef::new(DEPARTEMENT::IdDir).string())
                     .to_owned(),
             )
             .await
@@ -27,14 +27,15 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table(ETABLISSEMENT::Table).to_owned())
+            .drop_table(Table::drop().table(DEPARTEMENT::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-enum ETABLISSEMENT {
+pub enum DEPARTEMENT {
     Table,
-    IdEtab,
-    NomEtab
+    IdDep,
+    NomDep,
+    IdDir
 }
