@@ -9,5 +9,6 @@ pub fn config(config: &mut web::ServiceConfig) {
         .service(
             web::scope("/auth")
             .service(handlers::auth_handlers::register)
+            .service(handlers::auth_handlers::login)
         );
 }

@@ -20,7 +20,7 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(EMPLOYE::NMatricule).string().not_null())
+                    .col(ColumnDef::new(EMPLOYE::NMatricule).string().not_null().unique_key())
                     .col(ColumnDef::new(EMPLOYE::IdSupHier).string())
                     .col(ColumnDef::new(EMPLOYE::IdDep).integer())
                     // .col(ColumnDef::new(EMPLOYE::IdDep).integer().not_null())
@@ -35,7 +35,7 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(EMPLOYE::PasswEmpl).string().not_null())
                     .col(ColumnDef::new(EMPLOYE::Role).string().not_null())
                     .col(ColumnDef::new(EMPLOYE::DateEmbauche).date())
-                    .col(ColumnDef::new(EMPLOYE::Status).string().not_null())
+                    .col(ColumnDef::new(EMPLOYE::Status).string().not_null().default("actif"))
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_etablissement")

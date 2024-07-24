@@ -1,9 +1,9 @@
 use actix_web::{post, web};
-use sea_orm::{ActiveModelTrait, Set};
+use sea_orm::{ActiveModelTrait, ColumnTrait, Condition, EntityTrait, QueryFilter, Set};
 use serde::{Deserialize, Serialize};
 use sha256::digest;
 
-use crate::utils::{api_response::ApiResponse, app_state};
+use crate::utils::{api_response::{self, ApiResponse}, app_state, jwt::encode_jwt};
 
 
 #[derive(Serialize, Deserialize)]
@@ -15,6 +15,13 @@ struct RegisterModel {
     email_empl: String,
     passw_empl: String,
     role: String
+}
+
+#[derive(Serialize, Deserialize)]
+struct LoginModel {
+    // n_matricule: String,
+    email_empl: String,
+    passw_empl: String
 }
 
 #[post("/register")]
@@ -37,4 +44,26 @@ pub async fn register(
         ApiResponse::new(400, "Error registering user".to_string())
     })?;
     Ok(ApiResponse::new(200, format!("User {} created", user_model.n_matricule)))
+}
+
+
+#[post("/login")]
+pub async fn login(
+    app_state: web::Data<app_state::AppState>,
+    login_json: web::Json<LoginModel>
+) -> Result<ApiResponse, ApiResponse> {
+
+    let employe_data = entity::employe::Entity::find()
+        .filter(
+            Condition::all()
+                .add(entity::employe::Column::EmailEmpl.eq(login_json.email_empl.clone()))
+                .add(entity::employe::Column::PasswEmpl.eq(digest(&login_json.passw_empl)))
+        ).one(&app_state.db).await
+        .map_err(|err| ApiResponse::new(500, err.to_string()))?
+        .ok_or(ApiResponse::new(404, "User Not found".to_owned()))?;
+
+    let token = encode_jwt(employe_data.email_empl, employe_data.id_empl)
+        .map_err(|e| ApiResponse::new(500, e.to_string()))?;
+
+    Ok(api_response::ApiResponse::new(200, format!("User {} logged in. With token: {}", login_json.email_empl, token)))
 }
