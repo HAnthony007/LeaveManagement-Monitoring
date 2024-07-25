@@ -12,4 +12,10 @@ dotenv = "0.15.0"
 lazy_static = "1.5.0"
 sea-orm = { version = "0.12", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros" ] }
 sea-orm-cli = "0.12.15"
+entity = { path = "entity" }
 migration = { path = "migration" }
+sha256 = "1.5.0"
+chrono = "0.4.38"
+jsonwebtoken = "9.3.0"
+actix-web-lab = "0.20.2"
+actix-cors = "0.7.0"
