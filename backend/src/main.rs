@@ -1,5 +1,6 @@
 use std::{error::Error, fmt::Display};
 
+use actix_cors::Cors;
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use migration::{Migrator, MigratorTrait};
 use sea_orm::{Database, DatabaseConnection};
@@ -55,7 +56,7 @@ async fn main() -> Result<(), MainError> {
                 message: err.to_string(),
             })?;
     
-    Migrator::fresh(&db)
+    Migrator::up(&db, None)
         .await
         .map_err(|err| MainError {
             message: err.to_string(),
@@ -65,6 +66,13 @@ async fn main() -> Result<(), MainError> {
         App::new()
             .app_data(web::Data::new(AppState { db: db.clone() } ))
             .wrap(Logger::default())
+            .wrap(
+                Cors::default()
+                    .allow_any_origin()
+                    .allow_any_method()
+                    .allow_any_header()
+                    .supports_credentials(),
+            )
             .configure(routes::test_routes::config)
             .configure(routes::auth_routes::config)
             .configure(routes::employe_routes::config)
