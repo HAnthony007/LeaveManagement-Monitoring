@@ -5,8 +5,10 @@
 *.rs.bk
 *.rs.bak
 
-/.cargo
-/Cargo.lock
+Cargo.lock
+
+/.cargo/registry/
+/.cargo/git/
 
 /pkg/
 
@@ -16,3 +18,5 @@
 
 .history/
 *.code-workspace
+
+node_modules/

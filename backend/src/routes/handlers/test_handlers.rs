@@ -1,11 +1,14 @@
 use actix_web::{get, web, Responder};
 
-use crate::utils::api_response;
-
-
-
+use crate::utils::api_response::ApiResponse;
 
 #[get("/hello/{name}")]
 pub async fn hello(name: web::Path<String>) -> impl Responder {
-    api_response::ApiResponse::new(200, format!("Hello {}!", &name))
+    let api_response = ApiResponse::new(
+        200,
+        true,
+        format!("Hello {}!", name),
+        Some(format!("Hello {}!", name)),
+    );
+    api_response
 }

@@ -3,8 +3,18 @@ use sea_orm::{ActiveModelTrait, ColumnTrait, Condition, EntityTrait, QueryFilter
 use serde::{Deserialize, Serialize};
 use sha256::digest;
 
-use crate::utils::{api_response::{self, ApiResponse}, app_state, jwt::encode_jwt};
+use crate::utils::{
+    api_response::{self, ApiResponse},
+    app_state,
+    jwt::encode_jwt,
+};
 
+#[derive(Serialize, Deserialize)]
+struct LoginModel {
+    // n_matricule: String,
+    email_empl: String,
+    passw_empl: String,
+}
 
 #[derive(Serialize, Deserialize)]
 struct RegisterModel {
@@ -14,21 +24,66 @@ struct RegisterModel {
     prenom_empl: Option<String>,
     email_empl: String,
     passw_empl: String,
-    role: String
+    role: String,
 }
 
 #[derive(Serialize, Deserialize)]
-struct LoginModel {
-    // n_matricule: String,
-    email_empl: String,
-    passw_empl: String
+struct LoginResponseData {
+    user: RegisterModel,
+    token: String,
 }
 
 #[post("/register")]
 pub async fn register(
     app_state: web::Data<app_state::AppState>,
-    register_json: web::Json<RegisterModel>
-) -> Result<ApiResponse, ApiResponse> {
+    register_json: web::Json<RegisterModel>,
+) -> Result<ApiResponse<RegisterModel>, ApiResponse<()>> {
+    // check email
+    let existing_email = entity::employe::Entity::find()
+        .filter(entity::employe::Column::EmailEmpl.eq(register_json.email_empl.clone()))
+        .one(&app_state.db)
+        .await
+        .map_err(|e| {
+            println!("{:?}", e);
+            ApiResponse::new(
+                500,
+                false,
+                "Error checking email".to_owned(),
+                None
+            )
+        })?;
+    if existing_email.is_some() {
+        return Ok(ApiResponse::new(
+            200,
+            false,
+            "Email already exists".to_owned(),
+            None
+        ));
+    }
+
+    // check matricule
+    let existing_matricule = entity::employe::Entity::find()
+        .filter(entity::employe::Column::NMatricule.eq(register_json.n_matricule.clone()))
+        .one(&app_state.db)
+        .await
+        .map_err(|e| {
+            println!("{:?}", e);
+            ApiResponse::new(
+                500,
+                false,
+                "Error checking matricule".to_owned(),
+                None
+            )
+        })?;
+    if existing_matricule.is_some() {
+        return Ok(ApiResponse::new(
+            200,
+            false,
+            "Matricule already exists".to_owned(),
+            None
+        ));
+    }
+
     let user_model = entity::employe::ActiveModel {
         n_matricule: Set(register_json.n_matricule.clone()),
         id_dep: Set(register_json.id_dep),
@@ -38,32 +93,90 @@ pub async fn register(
         passw_empl: Set(digest(&register_json.passw_empl)),
         role: Set(register_json.role.clone()),
         ..Default::default()
-    }.insert(&app_state.db).await
+    }
+    .insert(&app_state.db)
+    .await
     .map_err(|e| {
         println!("{:?}", e);
-        ApiResponse::new(400, "Error registering user".to_string())
+        ApiResponse::new(
+            500,
+            false,
+            "Error registering user".to_owned(),
+            None
+        )
     })?;
-    Ok(ApiResponse::new(200, format!("User {} created", user_model.n_matricule)))
-}
 
+    let user_data = RegisterModel {
+        n_matricule: user_model.n_matricule,
+        id_dep: user_model.id_dep,
+        nom_empl: user_model.nom_empl,
+        prenom_empl: user_model.prenom_empl,
+        email_empl: user_model.email_empl,
+        passw_empl: user_model.passw_empl,
+        role: user_model.role,
+    };
+    
+    Ok(ApiResponse::new(
+        200,
+        true,
+        "User registered Succefully".to_owned(),
+        Some(user_data),
+    ))
+}
 
 #[post("/login")]
 pub async fn login(
     app_state: web::Data<app_state::AppState>,
-    login_json: web::Json<LoginModel>
-) -> Result<ApiResponse, ApiResponse> {
-
+    login_json: web::Json<LoginModel>,
+) -> Result<ApiResponse<LoginResponseData>, ApiResponse<()>> {
     let employe_data = entity::employe::Entity::find()
         .filter(
             Condition::all()
                 .add(entity::employe::Column::EmailEmpl.eq(login_json.email_empl.clone()))
-                .add(entity::employe::Column::PasswEmpl.eq(digest(&login_json.passw_empl)))
-        ).one(&app_state.db).await
-        .map_err(|err| ApiResponse::new(500, err.to_string()))?
-        .ok_or(ApiResponse::new(404, "User Not found".to_owned()))?;
+                .add(entity::employe::Column::PasswEmpl.eq(digest(&login_json.passw_empl))),
+        )
+        .one(&app_state.db)
+        .await
+        .map_err(|err| ApiResponse::new(
+            500,
+            false,
+            err.to_string(),
+            None
+        ))?
+        .ok_or(ApiResponse::new(
+            404,
+            false,
+            "User Not found".to_owned(),
+            None
+        ))?;
 
-    let token = encode_jwt(employe_data.email_empl, employe_data.id_empl)
-        .map_err(|e| ApiResponse::new(500, e.to_string()))?;
+    let token = encode_jwt(employe_data.email_empl.clone(), employe_data.id_empl)
+        .map_err(|e| ApiResponse::new(
+            500,
+            false,
+            e.to_string(),
+            None
+        ))?;
+    
+    let user_data = RegisterModel {
+        n_matricule: employe_data.n_matricule,
+        id_dep: employe_data.id_dep,
+        nom_empl: employe_data.nom_empl,
+        prenom_empl: employe_data.prenom_empl,
+        email_empl: employe_data.email_empl,
+        passw_empl: employe_data.passw_empl,
+        role: employe_data.role,
+    };
+    
+    let response_data = LoginResponseData {
+        user: user_data,
+        token,
+    };
 
-    Ok(api_response::ApiResponse::new(200, format!("User {} logged in. With token: {}", login_json.email_empl, token)))
+    Ok(api_response::ApiResponse::new(
+        200,
+        true,
+        "Login successful".to_owned(),
+        Some(response_data)
+    ))
 }

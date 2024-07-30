@@ -1,30 +1,83 @@
-use actix_web::{body::MessageBody, dev::{ServiceRequest, ServiceResponse}, http::header::AUTHORIZATION, Error, HttpMessage};
+use actix_web::{
+    body::MessageBody,
+    dev::{ServiceRequest, ServiceResponse},
+    http::header::AUTHORIZATION,
+    Error, HttpMessage,
+};
 use actix_web_lab::middleware::Next;
 
-use crate::utils::{api_response::{self, ApiResponse}, jwt::decode_jwt};
+use crate::utils::{
+    api_response::ApiResponse, 
+    jwt::decode_token
+};
 
-
-pub async fn check_auth_middleware (
+pub async fn check_auth_middleware(
     req: ServiceRequest,
-    next: Next<impl MessageBody>
+    next: Next<impl MessageBody>,
 ) -> Result<ServiceResponse<impl MessageBody>, Error> {
     let auth = req.headers().get(AUTHORIZATION);
 
-    if auth.is_none() {
-        return Err(Error::from(api_response::ApiResponse::new(401, "Unauthorized".to_string())));
-    }
+    // if auth.is_none() {
+    //     return Err(Error::from(ApiResponse::<()>::new(
+    //         401, 
+    //         false,
+    //         "Unauthorised".to_string(), 
+    //         None
+    //     )));
+    // }
 
-    let token = match auth.unwrap().to_str() {
-        Ok(t) => t.replace("Bearer ", ""),
-        Err(_) => return Err(Error::from(api_response::ApiResponse::new(400, "Invalid Authorization headers".to_string()))),
+    // let token = auth.unwrap().to_str().unwrap().replace("Bearer ", "").to_owned();
+
+    let token = match auth {
+        Some(header_value) => {
+            match header_value.to_str() {
+                Ok(header_str) => {
+                    if header_str.starts_with("Bearer ") {
+                        header_str.trim_start_matches("Bearer ").to_owned()
+                    } else {
+                        return Err(Error::from(ApiResponse::<()>::new(
+                            400,
+                            false,
+                            "Invalid Authorization header format".to_string(),
+                            None
+                        )));
+                    }
+                },
+                Err(_) => {
+                    return Err(Error::from(ApiResponse::<()>::new(400, false, "Invalid Authorization header format".to_string(), None)));
+                }
+            }
+        }
+        None => {
+            return Err(Error::from(ApiResponse::<()>::new(
+                401, 
+                false, 
+                "Unauthorised: Missing Authorization header".to_string(), 
+                None
+            )));
+        }
     };
 
-    let claim = match decode_jwt(token) {
-        Ok(c) => c,
-        Err(_) => return Err(Error::from(api_response::ApiResponse::new(401, "Invalid Token".to_string()))),
+    let claim = match decode_token(token) {
+        Ok(claim) => claim,
+        Err(err) => {
+            return Err(Error::from(ApiResponse::<()>::new(
+                401, 
+                false, 
+                format!("Unauthorised: invalid token, {}", err), 
+                None
+            )));
+        }
     };
 
     req.extensions_mut().insert(claim.claims);
 
-    next.call(req).await.map_err(|err| Error::from(ApiResponse::new(500, err.to_string())))
+    next.call(req)
+        .await
+        .map_err(|err| Error::from(ApiResponse::<()>::new(
+            500,
+            false,
+            err.to_string(),
+            None, 
+        )))
 }
