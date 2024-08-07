@@ -12,7 +12,7 @@ pub struct Model {
     #[sea_orm(unique)]
     pub nom_dep: String,
     #[sea_orm(unique)]
-    pub id_empl: Option<String>,
+    pub sup_hier: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

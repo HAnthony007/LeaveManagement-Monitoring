@@ -20,7 +20,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(DEPARTEMENT::CodeDep).string().not_null().unique_key())
                     .col(ColumnDef::new(DEPARTEMENT::NomDep).string().not_null().unique_key())
-                    .col(ColumnDef::new(DEPARTEMENT::IdEmpl).string().unique_key())
+                    .col(ColumnDef::new(DEPARTEMENT::SupHier).string().unique_key())
                     // .foreign_key(
                     //     ForeignKey::create()
                     //         .name("fk_suphier")
@@ -47,5 +47,5 @@ pub enum DEPARTEMENT {
     IdDep,
     CodeDep,
     NomDep,
-    IdEmpl
+    SupHier
 }

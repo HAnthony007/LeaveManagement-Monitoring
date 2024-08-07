@@ -1,6 +1,6 @@
 use sea_orm_migration::prelude::*;
 
-use crate::m20240723_134332_create_etablissement_table::DEPARTEMENT;
+use crate::m20240723_134332_create_departement_table::DEPARTEMENT;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -37,7 +37,7 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(EMPLOYE::Status).string().not_null().default("actif"))
                     .foreign_key(
                         ForeignKey::create()
-                            .name("fk_etablissement")
+                            .name("fk_departement")
                             .from(EMPLOYE::Table, EMPLOYE::IdDep)
                             .to(DEPARTEMENT::Table, DEPARTEMENT::IdDep)
                             .on_delete(ForeignKeyAction::Cascade)

@@ -13,7 +13,7 @@ pub struct Claims {
     pub exp: usize,
     pub iat: usize,
     pub email: String,
-    pub id: i32,
+    pub id: String,
 }
 
 // #[derive(Debug, Serialize, Deserialize)]
@@ -41,7 +41,7 @@ impl FromRequest for Claims {
     }
 }
 
-pub fn encode_jwt(email: String, id: i32) -> Result<String, jsonwebtoken::errors::Error> {
+pub fn encode_jwt(email: String, id: String) -> Result<String, jsonwebtoken::errors::Error> {
     let now = Utc::now();
     let expire = Duration::hours(24);
 
