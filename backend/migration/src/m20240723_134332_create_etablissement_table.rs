@@ -14,12 +14,21 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         ColumnDef::new(DEPARTEMENT::IdDep)
-                            .integer()
+                            .string()
                             .not_null()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(DEPARTEMENT::NomDep).string().not_null())
-                    .col(ColumnDef::new(DEPARTEMENT::IdDir).string())
+                    .col(ColumnDef::new(DEPARTEMENT::CodeDep).string().not_null().unique_key())
+                    .col(ColumnDef::new(DEPARTEMENT::NomDep).string().not_null().unique_key())
+                    .col(ColumnDef::new(DEPARTEMENT::IdEmpl).string().unique_key())
+                    // .foreign_key(
+                    //     ForeignKey::create()
+                    //         .name("fk_suphier")
+                    //         .from(DEPARTEMENT::Table, DEPARTEMENT::IdEmpl)
+                    //         .to(EMPLOYE::Table, EMPLOYE::IdEmpl)
+                    //         .on_delete(ForeignKeyAction::SetNull)
+                    //         .on_update(ForeignKeyAction::SetNull)
+                    // )
                     .to_owned(),
             )
             .await
@@ -36,6 +45,7 @@ impl MigrationTrait for Migration {
 pub enum DEPARTEMENT {
     Table,
     IdDep,
+    CodeDep,
     NomDep,
-    IdDir
+    IdEmpl
 }

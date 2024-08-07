@@ -6,9 +6,13 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "departement")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id_dep: i32,
+    pub id_dep: String,
+    #[sea_orm(unique)]
+    pub code_dep: String,
+    #[sea_orm(unique)]
     pub nom_dep: String,
-    pub id_dir: Option<String>,
+    #[sea_orm(unique)]
+    pub id_empl: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
