@@ -1,6 +1,6 @@
 "use client";
 import { ApiResponse } from "@/types/ApiResponse"
-import { AllUsers, User } from "@/types/Employe"
+import { User } from "@/types/Employe"
 import { apiUrl } from "@/utils/axiosInstance";
 import { fetcher } from "@/utils/fetcher";
 import { toast } from "sonner";

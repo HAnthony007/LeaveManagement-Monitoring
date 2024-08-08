@@ -1,5 +1,5 @@
 import { ApiResponse } from "@/types/ApiResponse";
-import { Departement } from "@/types/departement";
+import { Departement } from "@/types/Employe";
 import { apiUrl } from "@/utils/axiosInstance";
 import { fetcher } from "@/utils/fetcher";
 import { toast } from "sonner";
@@ -7,7 +7,7 @@ import useSWR from "swr";
 
 
 export function useAllDepartement() {
-    const {data: departements, error, isLoading} = useSWR<ApiResponse<Departement[]>>(`${apiUrl}/admin/all_departement`,
+    const {data: departements, error, isLoading} = useSWR<ApiResponse<Departement[]>>(`${apiUrl}/admin/secure/all_departement`,
         fetcher,
         {
             onError: (error) => {

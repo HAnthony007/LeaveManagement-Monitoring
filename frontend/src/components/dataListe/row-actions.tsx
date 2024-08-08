@@ -8,8 +8,7 @@ import { Button } from "@/components/ui/button"
 import { departementSchemas, userSchema } from "@/schemas/schemaTable"
 import { labels } from "@/configs/site"
 import { toast } from "sonner"
-import { User } from "@/types/Employe"
-import { Departement } from "@/types/departement"
+import { Departement, User } from "@/types/Employe"
 
 type DataTableRowActionsPropsUsers = {
     row: Row<User>

@@ -59,6 +59,24 @@ export const columnsUsers: ColumnDef<userType>[] = [
         cell: ({ row }) => <div>{row.getValue("role")}</div>,
     },
     {
+        accessorKey: "status",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+        cell: ({ row }) => <div>{row.getValue("status")}</div>,
+    },
+
+    {
+        accessorKey: "departement",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Departement" />,
+        cell: ({ row }) => {
+            const departement = row.getValue("departement") as departementType;
+            return (
+                <div>
+                    {departement ? departement?.nom_dep : "N/A"}
+                </div>
+            );
+        },
+    },
+    {
         id: "actions",
         cell: ({ row }) => <DataTableRowActionsUsers row={row} />,
     },
@@ -89,13 +107,13 @@ export const columnsDepartements: ColumnDef<departementType>[] = [
         enableSorting: false,
         enableHiding: false,
     },
-    // {
-    //     accessorKey: "id_dep",
-    //     header: ({ column }) => <DataTableColumnHeader column={column} title="Code departement" />,
-    //     cell: ({ row }) => <div className="w-[80px]">{row.getValue("id_dep")}</div>,
-    //     enableSorting: false,
-    //     enableHiding: false,
-    // },
+    {
+        accessorKey: "code_dep",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Code departement" />,
+        cell: ({ row }) => <div className="w-[80px]">{row.getValue("code_dep")}</div>,
+        enableSorting: false,
+        enableHiding: false,
+    },
     {
         accessorKey: "nom_dep",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Nom Departement" />,
@@ -106,9 +124,9 @@ export const columnsDepartements: ColumnDef<departementType>[] = [
         ),
     },
     {
-        accessorKey: "id_dir",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Identifiant director" />,
-        cell: ({ row }) => <div>{row.getValue("id_dir")}</div>,
+        accessorKey: "chef_dep",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Chef Identifiant" />,
+        cell: ({ row }) => <div>{row.getValue("chef_dep")}</div>,
     },
     {
         id: "actions",
