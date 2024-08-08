@@ -10,7 +10,7 @@ pub struct Model {
     #[sea_orm(unique)]
     pub n_matricule: String,
     pub id_sup_hier: Option<String>,
-    pub id_dep: Option<String>,
+    pub id_dep: String,
     pub nom_empl: String,
     pub prenom_empl: Option<String>,
     #[sea_orm(unique)]

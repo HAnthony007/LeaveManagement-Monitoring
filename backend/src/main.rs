@@ -56,7 +56,15 @@ async fn main() -> Result<(), MainError> {
                 message: err.to_string(),
             })?;
     
-    Migrator::up(&db, None)
+    // // Mise a jour BD
+    // Migrator::up(&db, None)
+    //     .await
+    //     .map_err(|err| MainError {
+    //         message: err.to_string(),
+    //     })?;
+
+    // Reinitialise la base de donne
+    Migrator::fresh(&db)
         .await
         .map_err(|err| MainError {
             message: err.to_string(),

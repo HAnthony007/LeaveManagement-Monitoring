@@ -1,5 +1,7 @@
 use sea_orm_migration::prelude::*;
 
+// use crate::m20240723_142314_create_employe_table::EMPLOYE;
+
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
@@ -20,11 +22,11 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(DEPARTEMENT::CodeDep).string().not_null().unique_key())
                     .col(ColumnDef::new(DEPARTEMENT::NomDep).string().not_null().unique_key())
-                    .col(ColumnDef::new(DEPARTEMENT::SupHier).string().unique_key())
+                    .col(ColumnDef::new(DEPARTEMENT::ChefDep).string().unique_key())
                     // .foreign_key(
                     //     ForeignKey::create()
                     //         .name("fk_suphier")
-                    //         .from(DEPARTEMENT::Table, DEPARTEMENT::IdEmpl)
+                    //         .from(DEPARTEMENT::Table, DEPARTEMENT::SupHier)
                     //         .to(EMPLOYE::Table, EMPLOYE::IdEmpl)
                     //         .on_delete(ForeignKeyAction::SetNull)
                     //         .on_update(ForeignKeyAction::SetNull)
@@ -47,5 +49,5 @@ pub enum DEPARTEMENT {
     IdDep,
     CodeDep,
     NomDep,
-    SupHier
+    ChefDep,
 }

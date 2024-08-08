@@ -12,12 +12,18 @@ pub struct Model {
     #[sea_orm(unique)]
     pub nom_dep: String,
     #[sea_orm(unique)]
-    pub sup_hier: Option<String>,
+    pub chef_dep: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::employe::Entity")]
+    #[sea_orm(
+        belongs_to = "super::employe::Entity",
+        from = "Column::ChefDep",
+        to = "super::employe::Column::IdEmpl",
+        on_update = "SetNull",
+        on_delete = "SetNull"
+    )]
     Employe,
 }
 

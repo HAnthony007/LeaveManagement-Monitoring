@@ -6,7 +6,7 @@ use sha256::digest;
 use crate::utils::{
     api_response::{self, ApiResponse},
     app_state,
-    jwt::{encode_jwt, Claims},
+    jwt::{encode_jwt, Claims}, random::generate_random_id,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -20,7 +20,18 @@ struct LoginModel {
 struct UserModel {
     id_empl: String,
     n_matricule: String,
-    id_dep: Option<String>,
+    id_dep: String,
+    nom_empl: String,
+    prenom_empl: Option<String>,
+    email_empl: String,
+    passw_empl: String,
+    role: String,
+}
+
+#[derive(Serialize, Deserialize)]
+struct UserData {
+    n_matricule: String,
+    id_dep: String,
     nom_empl: String,
     prenom_empl: Option<String>,
     email_empl: String,
@@ -78,7 +89,7 @@ pub async fn me(
 #[post("/register")]
 pub async fn register(
     app_state: web::Data<app_state::AppState>,
-    register_json: web::Json<UserModel>,
+    register_json: web::Json<UserData>,
 ) -> Result<ApiResponse<UserModel>, ApiResponse<()>> {
     // check email
     let existing_email = entity::employe::Entity::find()
@@ -126,14 +137,17 @@ pub async fn register(
         ));
     }
 
+    let generate_id = generate_random_id(&register_json.n_matricule);
+
     let user_model = entity::employe::ActiveModel {
+        id_empl: Set(generate_id),
         n_matricule: Set(register_json.n_matricule.clone()),
         id_dep: Set(register_json.id_dep.clone()),
         nom_empl: Set(register_json.nom_empl.clone()),
         prenom_empl: Set(register_json.prenom_empl.clone()),
         email_empl: Set(register_json.email_empl.clone()),
         passw_empl: Set(digest(&register_json.passw_empl)),
-        role: Set(register_json.role.clone()),
+        role: Set(register_json.role.to_lowercase().clone()),
         ..Default::default()
     }
     .insert(&app_state.db)
@@ -162,7 +176,7 @@ pub async fn register(
     Ok(ApiResponse::new(
         200,
         true,
-        "User registered Succefully".to_owned(),
+        "User registered Successfully".to_owned(),
         Some(user_data),
     ))
 }

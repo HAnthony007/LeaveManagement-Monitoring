@@ -2,14 +2,21 @@ use actix_web::{delete, get, post, web};
 use sea_orm::{ ActiveModelTrait, EntityTrait, ModelTrait, Set };
 use serde::{Deserialize, Serialize};
 
-use crate::utils::{api_response::ApiResponse, app_state};
+use crate::utils::{api_response::ApiResponse, app_state, random::generate_random_id};
 
 #[derive(Serialize, Deserialize)]
 struct DepartementModel {
     id_dep: String,
     code_dep: String,
     nom_dep: String,
-    sup_hier: Option<String>,
+    chef_dep: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+struct DepartementData {
+    code_dep: String,
+    nom_dep: String,
+    chef_dep: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -20,13 +27,14 @@ struct DepartementId {
 #[post("/add_departement")]
 pub async fn add_departement(
     app_state: web::Data<app_state::AppState>,
-    departement_json: web::Json<DepartementModel>
+    departement_json: web::Json<DepartementData>
 ) -> Result<ApiResponse<DepartementModel>, ApiResponse<()>> {
+    let generate_id = generate_random_id(&departement_json.code_dep);
     let dep_model = entity::departement::ActiveModel {
-        id_dep: Set(departement_json.id_dep.clone()),
+        id_dep: Set(generate_id),
         code_dep: Set(departement_json.code_dep.clone()),
         nom_dep: Set(departement_json.nom_dep.clone()),
-        sup_hier: Set(departement_json.sup_hier.clone()),
+        chef_dep: Set(departement_json.chef_dep.clone()),
         ..Default::default()
     }
     .insert(&app_state.db)
@@ -45,7 +53,7 @@ pub async fn add_departement(
         id_dep: dep_model.id_dep,
         code_dep: dep_model.code_dep,
         nom_dep: dep_model.nom_dep,
-        sup_hier: dep_model.sup_hier
+        chef_dep: dep_model.chef_dep,
     };
     
     Ok(ApiResponse::new(
@@ -77,7 +85,7 @@ pub async fn all_departement(
             id_dep: dep.id_dep,
             code_dep: dep.code_dep,
             nom_dep: dep.nom_dep,
-            sup_hier: dep.sup_hier,
+            chef_dep: dep.chef_dep,
         })
         .collect::<Vec<DepartementModel>>();
 
@@ -120,8 +128,9 @@ pub async  fn update_departement(
 
     let mut dep_model: entity::departement::ActiveModel = dep_model.into();
 
+    dep_model.code_dep = Set(departement_json.code_dep.clone());
     dep_model.nom_dep = Set(departement_json.nom_dep.clone());
-    dep_model.sup_hier = Set(departement_json.sup_hier.clone());
+    dep_model.chef_dep= Set(departement_json.chef_dep.clone());
 
     let updated_dep_model = dep_model
         .update(&app_state.db)
@@ -135,7 +144,7 @@ pub async  fn update_departement(
         id_dep: updated_dep_model.id_dep,
         code_dep: updated_dep_model.code_dep,
         nom_dep: updated_dep_model.nom_dep,
-        sup_hier: updated_dep_model.sup_hier,
+        chef_dep: updated_dep_model.chef_dep,
     };
     Ok(ApiResponse::new(
         200,
