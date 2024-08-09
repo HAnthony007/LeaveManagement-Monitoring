@@ -43,7 +43,7 @@ impl FromRequest for Claims {
 
 pub fn encode_jwt(email: String, id: String) -> Result<String, jsonwebtoken::errors::Error> {
     let now = Utc::now();
-    let expire = Duration::hours(24);
+    let expire = Duration::hours(5);
 
     let claims = Claims {
         exp: (now+expire).timestamp() as usize,

@@ -4,7 +4,7 @@ import { User } from "@/types/Employe"
 import { apiUrl } from "@/utils/axiosInstance";
 import { fetcher } from "@/utils/fetcher";
 import { toast } from "sonner";
-import useSWR from "swr"
+import useSWR, { mutate } from "swr"
 
 
 export function useAllEmploye() {
@@ -18,12 +18,19 @@ export function useAllEmploye() {
         },
     );
 
-    console.log(users?.message)
-    
+    const updateUserData = async () => {
+        try {
+            await mutate(`${apiUrl}/employe/all_employe`);
+        } catch (error) {
+            console.error("Error updating user data", error);
+            toast.error("Unse erreur est survenue lors de la mise a jour de donne des employes");
+        }
+    }
 
     return {
         users: users?.data || [],
         isLoading,
-        error: error?.message || null
+        error: error?.message || null,
+        updateUserData
     };
 }

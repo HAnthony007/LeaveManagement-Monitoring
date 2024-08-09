@@ -18,7 +18,8 @@ import {
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DataTablePagination } from "./table-pagination"
-import { DataTableToolbar } from "./toolbar"
+import { DataTableToolbarDepartement, DataTableToolbarUsers } from "./toolbar"
+import { usePathname } from "next/navigation"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -58,10 +59,13 @@ export function DataTable<TData, TValue>({
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
     })
+    const pathname = usePathname();
 
     return (
         <div className="space-y-4">
-            <DataTableToolbar table={table} />
+            {
+                pathname === '/admin/users' ? <DataTableToolbarUsers table={table} /> : <DataTableToolbarDepartement table={table}/>
+            }
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>

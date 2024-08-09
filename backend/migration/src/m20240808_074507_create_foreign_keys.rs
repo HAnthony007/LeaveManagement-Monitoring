@@ -26,8 +26,8 @@ impl MigrationTrait for Migration {
                     .name("fk_suphier")
                     .from(DEPARTEMENT::Table, DEPARTEMENT::ChefDep)
                     .to(EMPLOYE::Table, EMPLOYE::IdEmpl)
-                    .on_delete(ForeignKeyAction::SetNull)
-                    .on_update(ForeignKeyAction::SetNull)
+                    .on_delete(ForeignKeyAction::Cascade)
+                    .on_update(ForeignKeyAction::Cascade)
                     .to_owned(),
             )
             .await?;

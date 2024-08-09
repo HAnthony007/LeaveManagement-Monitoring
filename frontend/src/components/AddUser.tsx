@@ -1,29 +1,42 @@
 import { Button } from "./ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { Input } from "./ui/input"
-import { Label } from "./ui/label"
-import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "./ui/use-toast"
-import { userSchema, userType } from "@/schemas/schemaTable"
+import { userRegister, userRegisterType } from "@/schemas/schemaTable"
+import { useAllDepartement } from "@/hooks/useDepartement"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
+import { Departement } from '@/types/Employe';
+import { Separator } from "./ui/separator"
+import { useRegister } from "@/hooks/useAuth"
+import { toast as toastSonner } from 'sonner';
+import { EditIcon } from "./icon/iconApp"
 
-export const AddUser = () => {
-    const form = useForm<userType>({
-        resolver: zodResolver(userSchema),
+type addUserProps = {
+    user?: userRegisterType;
+}
+
+export const AddUser = ({ user }: addUserProps) => {
+
+    const { departements } = useAllDepartement();
+    const { register } = useRegister();
+
+    const form = useForm<userRegisterType>({
+        resolver: zodResolver(userRegister),
         defaultValues: {
-            n_matricule: "",
-            id_dep: null,
-            nom_empl: "",
-            prenom_empl: "",
-            email_empl: "",
-            passw_empl: "",
-            role: "",
+            n_matricule: user?.n_matricule || "",
+            id_dep: "",
+            nom_empl: user?.nom_empl || "",
+            prenom_empl: user?.prenom_empl || "",
+            email_empl: user?.email_empl || "",
+            passw_empl: user?.passw_empl || "",
+            role: user?.role || "employe",
         },
     })
 
-    function onSubmit(data: userType) {
+    async function onSubmit(data: userRegisterType) {
         toast({
             title: "You submitted the following values:",
             description: (
@@ -32,78 +45,136 @@ export const AddUser = () => {
                 </pre>
             ),
         })
+        try {
+            if (user) {
+                toastSonner.success("Modification reussie");
+            } else {
+                await register(data);
+            }
+            form.reset();
+        } catch (error) {
+            console.error("Erreur lors de l'enregistrement")
+            toast({
+                title: "Erreur",
+                description: "Une erreur est survenue lors de l'enregistrement.",
+                variant: "destructive",
+            })
+        }
     }
+
     return (
         <Dialog>
-            <DialogTrigger asChild>
-                <Button>Edit Profile</Button>
+            <DialogTrigger asChild className={ user ? "m-3" : "m-10"}>
+                { user ? 
+                <EditIcon />: <Button>Ajouter</Button> }
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[850px]">
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
                         <DialogHeader>
-                            <DialogTitle>Edit profile</DialogTitle>
+                            <DialogTitle>{ user ? "Modification utilisateur" : "Ajout utilisateur"}</DialogTitle>
                             <DialogDescription>
                                 Make changes to your profile here. Click save when you&apos;re done.
                             </DialogDescription>
                         </DialogHeader>
 
-                        <FormField
-                            control={form.control}
-                            name="n_matricule"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>N. Matricule</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="numero matricule" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        <Separator className="" />
 
-                        {/* <FormField
+                        <FormField
                             control={form.control}
                             name="id_dep"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>N. Matricule</FormLabel>
-                                    <FormControl>
-                                        <Input type="" placeholder="numero matricule" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        /> */}
-
-                        <FormField
-                            control={form.control}
-                            name="nom_empl"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Nom</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="votre nom" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="prenom_empl"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Prenom</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Votre prenom" {...field} />
-                                    </FormControl>
+                                    <FormLabel>Departement</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value} >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Choisisez votre departement" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {
+                                                departements.map((dep: Departement) => (
+                                                    <SelectItem key={dep.id_dep} value={dep.id_dep}>
+                                                        {dep.nom_dep}
+                                                    </SelectItem>
+                                                ))
+                                            }
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="n_matricule"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>N. Matricule</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="numero matricule" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="role"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Role</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value} >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Choisisez votre Role" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="employe">Employe</SelectItem>
+                                                <SelectItem value="rh">Resource humaine</SelectItem>
+                                                <SelectItem value="admin">Administrateur</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="nom_empl"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Nom</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Votre nom" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="prenom_empl"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Prenom</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Votre prenom" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                        </div>
 
                         <FormField
                             control={form.control}
@@ -131,23 +202,10 @@ export const AddUser = () => {
                                 </FormItem>
                             )}
                         />
-                        <FormField
-                            control={form.control}
-                            name="role"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Role</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Votre Role" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+
                         <DialogFooter>
                             <Button type="submit">Ajouter</Button>
                         </DialogFooter>
-
                     </form>
                 </Form>
             </DialogContent>

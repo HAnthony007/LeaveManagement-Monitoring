@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { departementType, userType } from "@/schemas/schemaTable";
 import { DataTableColumnHeader } from "./column-header";
 import { DataTableRowActionsDepartement, DataTableRowActionsUsers } from "./row-actions";
+import { Badge } from "../ui/badge";
 
 export const columnsUsers: ColumnDef<userType>[] = [
     {
@@ -36,22 +37,31 @@ export const columnsUsers: ColumnDef<userType>[] = [
         accessorKey: "n_matricule",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Matricule" />,
         cell: ({ row }) => <div className="w-[80px]">{row.getValue("n_matricule")}</div>,
-        enableSorting: false,
+        enableSorting: true,
         enableHiding: false,
     },
     {
-        accessorKey: "email_empl",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Email" />,
+        accessorKey: "nom_empl",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
         cell: ({ row }) => (
-            <div className="flex space-x-2">
-                <span className="max-w-[500px] truncate font-medium">{row.getValue("email_empl")}</span>
+            <div className="flex flex-col ">
+                <div className="max-w-[500px] truncate font-medium">
+                    {row.getValue("nom_empl")} {row.getValue("prenom_empl")}
+                </div>
+                <div className="hidden text-sm text-muted-foreground md:inline">
+                    {row.getValue("email_empl")}
+                </div>
             </div>
         ),
     },
     {
-        accessorKey: "nom_empl",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Nom" />,
-        cell: ({ row }) => <div>{row.getValue("nom_empl")}</div>,
+        accessorKey: "prenom_empl",
+        enableHiding: true,
+    },
+    {
+        accessorKey: "email_empl",
+        enableHiding: true,
+        
     },
     {
         accessorKey: "role",
@@ -61,7 +71,7 @@ export const columnsUsers: ColumnDef<userType>[] = [
     {
         accessorKey: "status",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
-        cell: ({ row }) => <div>{row.getValue("status")}</div>,
+        cell: ({ row }) => <Badge variant={"outline"}>{row.getValue("status")}</Badge>,
     },
 
     {
@@ -78,6 +88,7 @@ export const columnsUsers: ColumnDef<userType>[] = [
     },
     {
         id: "actions",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Action" />,
         cell: ({ row }) => <DataTableRowActionsUsers row={row} />,
     },
 ]

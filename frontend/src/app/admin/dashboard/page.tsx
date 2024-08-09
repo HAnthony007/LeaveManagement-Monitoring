@@ -1,7 +1,6 @@
 "use client"
 import { useAllDepartement } from "@/hooks/useDepartement";
 import { useAuthStore } from "@/stores/AuthStore";
-import Link from "next/link";
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
@@ -22,18 +21,7 @@ export default function DashboardPage() {
           Beautiful, fast and modern React UI library.
         </h2>
       </div>
-
-      <div className="flex gap-3">
-        <Link href={""}        >
-          Documentation
-        </Link>
-        <Link href={""}        >
-          GitHub
-        </Link>
-      </div>
-
-      <div className="mt-8">
-      </div>
+    
     </section>
   );
 }

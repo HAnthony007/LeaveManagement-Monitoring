@@ -5,13 +5,15 @@ export type User = {
     id_dep: string;
     id_suphier: string | null;
     nom_empl: string;
-    prenom_empl?: string;
+    prenom_empl: string;
     email_empl: string;
     passw_empl: string;
-    role: string;
+    role: UserRole;
     status: string;
     departement: Departement;
 }
+
+export type UserRole = 'employe' | 'rh' | 'admin'
 
 export type Departement = {
     id_dep: string;

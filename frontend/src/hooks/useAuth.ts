@@ -1,9 +1,9 @@
+import { userRegisterType } from "@/schemas/schemaTable";
 import { useAuthStore } from "@/stores/AuthStore";
 import axiosInstance from "@/utils/axiosInstance";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-const fetcher = (url: string) => axiosInstance.get(url).then((res) => res.data);
 
 export const useLogin = () => {
     const router = useRouter();
@@ -35,4 +35,24 @@ export const useLogin = () => {
     }
 
     return { login };
+}
+
+export const useRegister = () => {
+
+    const register = async (data: userRegisterType) => {
+        try {
+            const res = await axiosInstance.post('/auth/register', data);
+
+            if (!res.data.success) return toast.error(res.data.message);
+
+            toast.success("Registration successful");
+            
+            return res.data;
+        } catch (error) {
+            console.error("An error occurred during registration: ", error);
+            throw error;
+        }
+    };
+
+    return { register };
 }

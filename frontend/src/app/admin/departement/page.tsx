@@ -1,4 +1,5 @@
 "use client"
+import { AddDepartement } from "@/components/AddDepartement";
 import { columnsDepartements } from "@/components/dataListe/columns";
 import { DataTable } from "@/components/dataListe/data-table";
 import { UserNav } from "@/components/dataListe/user-nav";
@@ -18,7 +19,7 @@ export default function DepartementPage() {
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <UserNav />
+          <AddDepartement />
         </div>
       </div>
       <DataTable data={departements} columns={columnsDepartements} />

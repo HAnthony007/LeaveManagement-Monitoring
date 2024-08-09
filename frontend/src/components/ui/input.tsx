@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
     suffix?: React.ReactNode
+    value?: string | number | readonly string[] | undefined
   }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(

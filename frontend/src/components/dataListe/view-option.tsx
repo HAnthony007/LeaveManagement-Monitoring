@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MixerHorizontalIcon } from "@radix-ui/react-icons"
 import { Table } from "@tanstack/react-table"
+import { useEffect } from "react"
 
 
 interface DataTableViewOptionsProps<TData> {
@@ -13,6 +14,15 @@ interface DataTableViewOptionsProps<TData> {
 export function DataTableViewOptions<TData>({
     table,
 }: DataTableViewOptionsProps<TData>) {
+    const hiddenColumns = new Set(["prenom_empl", "email_empl"])
+    useEffect(() => {
+        table.getAllColumns().forEach((column) => {
+            if (hiddenColumns.has(column.id)) {
+                column.toggleVisibility(false);
+            }
+        })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [table])
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -32,7 +42,7 @@ export function DataTableViewOptions<TData>({
                     .getAllColumns()
                     .filter(
                         (column) =>
-                            typeof column.accessorFn !== "undefined" && column.getCanHide()
+                            typeof column.accessorFn !== "undefined" && column.getCanHide() && !hiddenColumns.has(column.id)
                     )
                     .map((column) => {
                         return (

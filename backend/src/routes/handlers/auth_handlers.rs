@@ -30,7 +30,7 @@ struct UserModel {
 }
 
 #[derive(Serialize, Deserialize)]
-struct UserData {
+pub struct UserData {
     n_matricule: String,
     id_dep: String,
     nom_empl: String,
