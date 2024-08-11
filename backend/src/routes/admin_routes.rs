@@ -13,8 +13,6 @@ pub fn config(config: &mut web::ServiceConfig) {
             .service(handlers::admin_handlers::update_departement)
             .service(handlers::admin_handlers::delete_departement)
 
-            // user
-            .service(handlers::admin_handlers::delete_user)
         )
         .service(
             web::scope("/admin")

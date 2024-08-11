@@ -5,8 +5,10 @@ use super::{handlers, middleware};
 
 pub fn config(config: &mut web::ServiceConfig) {
     config
-        .service( web::scope("/employe/update")
+        .service( web::scope("/employe/secure")
             .wrap(from_fn(middleware::auth_midllewares::check_auth_middleware))
+            .service(handlers::employe_handlers::me)
+            .service(handlers::employe_handlers::delete_user)
             .service(handlers::employe_handlers::update_employe)
         )
         .service(web::scope("/employe")
