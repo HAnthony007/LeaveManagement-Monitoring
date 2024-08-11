@@ -195,36 +195,3 @@ pub async fn delete_departement(
     Ok(ApiResponse::new(200, true, "Department deleted successfully".to_owned(), None))
 }
 
-#[delete("/delete_user/{id_empl}")]
-pub async fn delete_user(
-    app_state: web::Data<app_state::AppState>,
-    path: web::Path<UserId>,
-) -> Result<ApiResponse<()>, ApiResponse<()>> {
-    let id_empl = path.id_empl.clone();
-    let user_model = match entity::employe::Entity::find_by_id(id_empl)
-        .one(&app_state.db)
-        .await
-    {
-        Ok(Some(user)) => user,
-        Ok(None) => {
-            return Ok(ApiResponse::new(
-                404,
-                false,
-                "User not found".to_owned(),
-                None
-            ))
-        }
-        Err(e) => {
-            return Ok(ApiResponse::new(
-                500,
-                false,
-                e.to_string(),
-                None
-            ))
-        }
-    };
-    entity::employe::Model::delete(user_model, &app_state.db)
-        .await
-        .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
-    Ok(ApiResponse::new(200, true, "User deleted successfully".to_owned(), None))
-}

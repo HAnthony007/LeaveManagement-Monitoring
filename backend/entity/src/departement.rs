@@ -21,7 +21,7 @@ pub enum Relation {
         belongs_to = "super::employe::Entity",
         from = "Column::ChefDep",
         to = "super::employe::Column::IdEmpl",
-        on_update = "SetNull",
+        on_update = "Cascade",
         on_delete = "SetNull"
     )]
     Employe,

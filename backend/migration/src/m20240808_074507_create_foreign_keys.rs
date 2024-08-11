@@ -14,7 +14,7 @@ impl MigrationTrait for Migration {
                     .name("fk_departement")
                     .from(EMPLOYE::Table, EMPLOYE::IdDep)
                     .to(DEPARTEMENT::Table, DEPARTEMENT::IdDep)
-                    .on_delete(ForeignKeyAction::Cascade)
+                    .on_delete(ForeignKeyAction::SetNull)
                     .on_update(ForeignKeyAction::Cascade)
                     .to_owned(),
             )
@@ -26,7 +26,7 @@ impl MigrationTrait for Migration {
                     .name("fk_suphier")
                     .from(DEPARTEMENT::Table, DEPARTEMENT::ChefDep)
                     .to(EMPLOYE::Table, EMPLOYE::IdEmpl)
-                    .on_delete(ForeignKeyAction::Cascade)
+                    .on_delete(ForeignKeyAction::SetNull)
                     .on_update(ForeignKeyAction::Cascade)
                     .to_owned(),
             )

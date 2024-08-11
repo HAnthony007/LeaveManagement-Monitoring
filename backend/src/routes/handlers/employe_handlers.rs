@@ -1,37 +1,51 @@
 use actix_web::{
-    get, post, web::{self}
+    delete, get, post, web::{self}
 };
-use sea_orm::{EntityTrait, Set, ActiveModelTrait};
+use sea_orm::{ActiveModelTrait, EntityTrait, ModelTrait, Set};
 use serde::{Deserialize, Serialize};
 
-use crate::utils::{
-    api_response::ApiResponse,
-    app_state,
-};
+use crate::utils::{api_response::ApiResponse, app_state, jwt::Claims};
 
+#[derive(Serialize, Deserialize)]
+pub struct UserWithDep {
+    pub id_empl: String,
+    pub n_matricule: String,
+    pub nom_empl: String,
+    pub prenom_empl: Option<String>,
+    pub email_empl: String,
+    pub role: String,
+    pub departement: Option<DepartementData>,
+}
+
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UserInfo {
+    pub n_matricule: String,
+    pub id_dep: String,
+    pub nom_empl: String,
+    pub prenom_empl: Option<String>,
+    pub email_empl: String,
+    pub role: String,
+}
+
+#[derive( Debug, Serialize, Deserialize)]
+pub struct DepartementData {
+    pub code_dep: String,
+    pub nom_dep: String,
+    pub chef_dep: Option<UserInfo>,
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserModel {
     id_empl: String,
     n_matricule: String,
     id_dep: String,
-    id_suphier: Option<String>,
     nom_empl: String,
     prenom_empl: Option<String>,
     email_empl: String,
-    passw_empl: String,
     role: String,
     status: String,
     departement: Option<DepartementData>,
-}
-
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DepartementData {
-    id_dep: String,
-    code_dep: String,
-    nom_dep: String,
-    chef_dep: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -43,63 +57,146 @@ pub struct SuperieurData {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub  struct UserId {
+pub struct UserId {
     id_empl: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateUser {
-    n_matricule: String,
-    id_dep: String,
-    id_sup_hier: Option<String>,
-    nom_empl: String,
-    prenom_empl: Option<String>,
-    email_empl: String,
-    passw_empl: String,
-    role: String,
+
+#[get("/me")]
+pub async fn me(
+    app_state: web::Data<app_state::AppState>,
+    claim_data: Claims,
+) -> Result<ApiResponse<UserWithDep>, ApiResponse<()>> {
+    let employe = entity::employe::Entity::find_by_id(claim_data.id)
+        .one(&app_state.db)
+        .await
+        .map_err(|e| ApiResponse::new(
+            500, 
+            false,
+            e.to_string(),
+            None
+        ))?
+        .ok_or(ApiResponse::new(
+            404,
+            false,
+            "User not found".to_owned(),
+            None
+        ))?;
+
+    let departement = entity::departement::Entity::find_by_id(employe.id_dep)
+        .one(&app_state.db)
+        .await
+        .map_err(|e| ApiResponse::new(
+            500, 
+            false,
+            e.to_string(),
+            None
+        ))?;
+
+    let chef_dep = match departement {
+        Some(ref dept) => {
+            entity::employe::Entity::find_by_id(dept.chef_dep.clone().unwrap_or_else(|| String::new()))
+                .one(&app_state.db)
+                .await
+                .map_err(|e| ApiResponse::new(
+                    500, 
+                    false,
+                    e.to_string(),
+                    None
+                ))?
+        },
+        None => None,
+        
+    };
+
+
+    let employe_model = UserWithDep {
+        id_empl: employe.id_empl,
+        n_matricule: employe.n_matricule,
+        nom_empl: employe.nom_empl,
+        prenom_empl: employe.prenom_empl,
+        email_empl: employe.email_empl,
+        role: employe.role,
+        departement: departement.map(|dep| DepartementData {
+            code_dep: dep.code_dep,
+            nom_dep: dep.nom_dep,
+            chef_dep: chef_dep.map(|chef| UserInfo {
+                n_matricule: chef.n_matricule,
+                id_dep: chef.id_dep,
+                nom_empl: chef.nom_empl,
+                prenom_empl: chef.prenom_empl,
+                email_empl: chef.email_empl,
+                role: chef.role
+            })
+        })
+    };
+
+    Ok(ApiResponse::new(
+        200,
+        true,
+        "User found".to_string(),
+        Some(employe_model),
+    ))
 }
 
 
 #[get("/all_employe")]
 pub async fn all_employe(
     app_state: web::Data<app_state::AppState>,
-) -> Result<ApiResponse<Vec<UserModel>>, ApiResponse<()>> {
-    let employes = entity::employe::Entity::find()
-        .find_also_related(entity::departement::Entity)
+) -> Result<ApiResponse<Vec<UserWithDep>>, ApiResponse<()>> {
+    let employees = entity::employe::Entity::find()
         .all(&app_state.db)
         .await
-        .map_err(|err| ApiResponse::new(
-            500, 
-            false,
-            err.to_string(),
-            None
-        ))?
-        .into_iter()
-        .map(|(employe, departement) | UserModel {
-            id_empl: employe.id_empl,
-            n_matricule: employe.n_matricule,
-            id_dep: employe.id_dep,
-            id_suphier: employe.id_sup_hier,
-            nom_empl: employe.nom_empl,
-            prenom_empl: employe.prenom_empl,
-            email_empl: employe.email_empl,
-            passw_empl: employe.passw_empl,
-            role: employe.role,
-            status: employe.status,
-            departement: departement.map(|dep| DepartementData {
-                id_dep: dep.id_dep,
-                code_dep: dep.code_dep,
-                nom_dep: dep.nom_dep,
-                chef_dep: dep.chef_dep
-            }),
-        })
-        .collect::<Vec<UserModel>>();
+        .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
+
+    let employee_models = futures::future::join_all(employees.into_iter().map(|employee| {
+        let app_state = app_state.clone();
+        async move {
+            let departement = entity::departement::Entity::find_by_id(employee.id_dep)
+                .one(&app_state.db)
+                .await
+                .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
+            let chef_dep = match &departement {
+                Some(dep) => {
+                    entity::employe::Entity::find_by_id(dep.chef_dep.clone().unwrap_or_default())
+                        .one(&app_state.db)
+                        .await
+                        .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?
+                }
+                None => None,
+            };
+
+            Ok(UserWithDep {
+                id_empl: employee.id_empl,
+                n_matricule: employee.n_matricule,
+                nom_empl: employee.nom_empl,
+                prenom_empl: employee.prenom_empl,
+                email_empl: employee.email_empl,
+                role: employee.role,
+                departement: departement.map(|dep| DepartementData {
+                    code_dep: dep.code_dep,
+                    nom_dep: dep.nom_dep,
+                    chef_dep: chef_dep.map(|chef| UserInfo {
+                        n_matricule: chef.n_matricule,
+                        id_dep: chef.id_dep,
+                        nom_empl: chef.nom_empl,
+                        prenom_empl: chef.prenom_empl,
+                        email_empl: chef.email_empl,
+                        role: chef.role,
+                    }),
+                }),
+            })
+        }
+    }))
+    .await
+    .into_iter()
+    .collect::<Result<Vec<_>, _>>()?;
 
     Ok(ApiResponse::new(
         200,
         true,
-        "All employees fetched".to_string(),
-        Some(employes)
+        "All employees".to_string(),
+        Some(employee_models),
     ))
 }
 
@@ -108,8 +205,8 @@ pub async fn all_employe(
 pub async fn update_employe(
     app_state: web::Data<app_state::AppState>,
     path: web::Path<UserId>,
-    employe_json: web::Json<UpdateUser>,
-) -> Result<ApiResponse<UserModel>, ApiResponse<()>>{
+    employe_json: web::Json<UserInfo>,
+) -> Result<ApiResponse<UserModel>, ApiResponse<()>> {
     let id_empl = path.id_empl.clone();
 
     let user_model = match entity::employe::Entity::find_by_id(id_empl)
@@ -122,7 +219,64 @@ pub async fn update_employe(
                 404,
                 false,
                 "User not found".to_owned(),
-                None 
+                None,
+            ))
+        }
+        Err(e) => return Ok(ApiResponse::new(500, false, e.to_string(), None)),
+    };
+
+    let mut user_model: entity::employe::ActiveModel = user_model.into();
+
+    user_model.n_matricule = Set(employe_json.n_matricule.clone());
+    user_model.nom_empl = Set(employe_json.nom_empl.clone());
+    user_model.prenom_empl = Set(employe_json.prenom_empl.clone());
+    user_model.email_empl = Set(employe_json.email_empl.clone());
+    user_model.role = Set(employe_json.role.to_lowercase().clone());
+
+    let updated_user_model = user_model
+        .update(&app_state.db)
+        .await
+        .map_err(|err| ApiResponse::new(500, false, err.to_string(), None))?;
+
+    let user_data = UserModel {
+        id_empl: updated_user_model.id_empl,
+        n_matricule: updated_user_model.n_matricule,
+        id_dep: updated_user_model.id_dep,
+        nom_empl: updated_user_model.nom_empl,
+        prenom_empl: updated_user_model.prenom_empl,
+        email_empl: updated_user_model.email_empl,
+        role: updated_user_model.role,
+        status: updated_user_model.status,
+        departement: None,
+    };
+
+    Ok(ApiResponse::new(
+        200,
+        true,
+        "User updated successfully".to_owned(),
+        Some(user_data),
+    ))
+}
+
+
+
+#[delete("/delete_user/{id_empl}")]
+pub async fn delete_user(
+    app_state: web::Data<app_state::AppState>,
+    path: web::Path<UserId>,
+) -> Result<ApiResponse<()>, ApiResponse<()>> {
+    let id_empl = path.id_empl.clone();
+    let user_model = match entity::employe::Entity::find_by_id(id_empl)
+        .one(&app_state.db)
+        .await
+    {
+        Ok(Some(user)) => user,
+        Ok(None) => {
+            return Ok(ApiResponse::new(
+                404,
+                false,
+                "User not found".to_owned(),
+                None
             ))
         }
         Err(e) => {
@@ -134,45 +288,50 @@ pub async fn update_employe(
             ))
         }
     };
-
-    let mut user_model: entity::employe::ActiveModel = user_model.into();
-
-    user_model.n_matricule = Set(employe_json.n_matricule.clone());
-    user_model.nom_empl = Set(employe_json.nom_empl.clone());
-    user_model.prenom_empl = Set(employe_json.prenom_empl.clone());
-    user_model.email_empl = Set(employe_json.email_empl.clone());
-    user_model.passw_empl = Set(employe_json.passw_empl.clone());
-    user_model.role = Set(employe_json.role.to_lowercase().clone());
-
-    let updated_user_model = user_model
-        .update(&app_state.db)
+    entity::employe::Model::delete(user_model, &app_state.db)
         .await
-        .map_err(|err| ApiResponse::new(
-            500, 
-            false,
-            err.to_string(),
-            None
-        ))?;
-
-    let user_data = UserModel {
-        id_empl: updated_user_model.id_empl,
-        n_matricule: updated_user_model.n_matricule,
-        id_dep: updated_user_model.id_dep,
-        id_suphier: None,
-        nom_empl: updated_user_model.nom_empl,
-        prenom_empl: updated_user_model.prenom_empl,
-        email_empl: updated_user_model.email_empl,
-        passw_empl: updated_user_model.passw_empl,
-        role: updated_user_model.role,
-        status: updated_user_model.status,
-        departement: None
-    };
-
-    Ok(ApiResponse::new(
-        200,
-        true,
-        "User updated successfully".to_owned(),
-        Some(user_data),
-    ))
-
+        .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
+    Ok(ApiResponse::new(200, true, "User deleted successfully".to_owned(), None))
 }
+
+
+// #[get("/all_employe")]
+// pub async fn all_employe(
+//     app_state: web::Data<app_state::AppState>,
+// ) -> Result<ApiResponse<Vec<UserModel>>, ApiResponse<()>> {
+//     let employes = entity::employe::Entity::find()
+//         .find_also_related(entity::departement::Entity)
+//         .all(&app_state.db)
+//         .await
+//         .map_err(|err| ApiResponse::new(
+//             500,
+//             false,
+//             err.to_string(),
+//             None
+//         ))?
+//         .into_iter()
+//         .map(|(employe, departement) | UserModel {
+//             id_empl: employe.id_empl,
+//             n_matricule: employe.n_matricule,
+//             id_dep: employe.id_dep,
+//             nom_empl: employe.nom_empl,
+//             prenom_empl: employe.prenom_empl,
+//             email_empl: employe.email_empl,
+//             role: employe.role,
+//             status: employe.status,
+//             departement: departement.map(|dep| DepartementData {
+//                 id_dep: dep.id_dep,
+//                 code_dep: dep.code_dep,
+//                 nom_dep: dep.nom_dep,
+//                 chef_dep: dep.chef_dep
+//             }),
+//         })
+//         .collect::<Vec<UserModel>>();
+
+//     Ok(ApiResponse::new(
+//         200,
+//         true,
+//         "All employees fetched".to_string(),
+//         Some(employes)
+//     ))
+// }

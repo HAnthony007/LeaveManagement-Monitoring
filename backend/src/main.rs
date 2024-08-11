@@ -63,7 +63,7 @@ async fn main() -> Result<(), MainError> {
             message: err.to_string(),
         })?;
 
-    // // Reinitialise la base de donne
+    // Reinitialise la base de donne
     // Migrator::fresh(&db)
     //     .await
     //     .map_err(|err| MainError {

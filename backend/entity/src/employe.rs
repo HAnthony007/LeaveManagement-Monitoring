@@ -9,7 +9,6 @@ pub struct Model {
     pub id_empl: String,
     #[sea_orm(unique)]
     pub n_matricule: String,
-    pub id_sup_hier: Option<String>,
     pub id_dep: String,
     pub nom_empl: String,
     pub prenom_empl: Option<String>,
@@ -28,7 +27,7 @@ pub enum Relation {
         from = "Column::IdDep",
         to = "super::departement::Column::IdDep",
         on_update = "Cascade",
-        on_delete = "Cascade"
+        on_delete = "SetNull"
     )]
     Departement,
 }

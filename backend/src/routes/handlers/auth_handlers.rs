@@ -1,4 +1,4 @@
-use actix_web::{get, post, web};
+use actix_web::{post, web};
 use sea_orm::{ActiveModelTrait, ColumnTrait, Condition, EntityTrait, QueryFilter, Set};
 use serde::{Deserialize, Serialize};
 use sha256::digest;
@@ -6,14 +6,19 @@ use sha256::digest;
 use crate::utils::{
     api_response::{self, ApiResponse},
     app_state,
-    jwt::{encode_jwt, Claims}, random::generate_random_id,
+    jwt::encode_jwt, random::generate_random_id,
 };
 
 #[derive(Serialize, Deserialize)]
 struct LoginModel {
-    // n_matricule: String,
     email_empl: String,
     passw_empl: String,
+}
+
+#[derive(Serialize, Deserialize)]
+struct LoginResponseData {
+    user: UserModel,
+    token: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -21,7 +26,6 @@ struct UserModel {
     id_empl: String,
     n_matricule: String,
     id_dep: String,
-    id_sup_hier: Option<String>,
     nom_empl: String,
     prenom_empl: Option<String>,
     email_empl: String,
@@ -38,54 +42,6 @@ pub struct UserData {
     email_empl: String,
     passw_empl: String,
     role: String,
-}
-
-#[derive(Serialize, Deserialize)]
-struct LoginResponseData {
-    user: UserModel,
-    token: String,
-}
-
-
-#[get("/me")]
-pub async fn me(
-    _app_state: web::Data<app_state::AppState>,
-    claim_data: Claims,
-) -> Result<ApiResponse<UserModel>, ApiResponse<()>> {
-    let employe = entity::employe::Entity::find_by_id(claim_data.id)
-        .one(&_app_state.db)
-        .await
-        .map_err(|e| ApiResponse::new(
-            500, 
-            false,
-            e.to_string(),
-            None
-        ))?
-        .ok_or(api_response::ApiResponse::new(
-            404,
-            false,
-            "User not found".to_owned(),
-            None
-        ))?;
-    
-    let employe_model = UserModel {
-        id_empl: employe.id_empl,
-        n_matricule: employe.n_matricule,
-        id_dep: employe.id_dep,
-        id_sup_hier: employe.id_sup_hier,
-        nom_empl: employe.nom_empl,
-        prenom_empl: employe.prenom_empl,
-        email_empl: employe.email_empl,
-        passw_empl: employe.passw_empl,
-        role: employe.role,
-    };
-
-    Ok(api_response::ApiResponse::new(
-        200,
-        true,
-        "User found".to_string(),
-        Some(employe_model),
-    ))
 }
 
 #[post("/register")]
@@ -139,31 +95,12 @@ pub async fn register(
         ));
     }
 
-    let departement = entity::departement::Entity::find()
-        .filter(entity::departement::Column::IdDep.eq(&register_json.id_dep))
-        .one(&app_state.db)
-        .await
-        .map_err(|e| {
-            println!("{:?}", e);
-            ApiResponse::new(
-                500,
-                false,
-                "Error finding departement".to_owned(),
-                None
-            )
-        })?;
-    
-    let id_sup_hier = departement
-        .map(|dep| dep.chef_dep )
-        .unwrap_or_default();
-
     let generate_id = generate_random_id(&register_json.n_matricule);
 
     let user_model = entity::employe::ActiveModel {
         id_empl: Set(generate_id),
         n_matricule: Set(register_json.n_matricule.clone()),
         id_dep: Set(register_json.id_dep.clone()),
-        id_sup_hier: Set(id_sup_hier),
         nom_empl: Set(register_json.nom_empl.clone()),
         prenom_empl: Set(register_json.prenom_empl.clone()),
         email_empl: Set(register_json.email_empl.clone()),
@@ -187,7 +124,6 @@ pub async fn register(
         id_empl: user_model.id_empl,
         n_matricule: user_model.n_matricule,
         id_dep: user_model.id_dep,
-        id_sup_hier: user_model.id_sup_hier,
         nom_empl: user_model.nom_empl,
         prenom_empl: user_model.prenom_empl,
         email_empl: user_model.email_empl,
@@ -241,7 +177,6 @@ pub async fn login(
         id_empl: employe_data.id_empl,
         n_matricule: employe_data.n_matricule,
         id_dep: employe_data.id_dep,
-        id_sup_hier: employe_data.id_sup_hier,
         nom_empl: employe_data.nom_empl,
         prenom_empl: employe_data.prenom_empl,
         email_empl: employe_data.email_empl,
