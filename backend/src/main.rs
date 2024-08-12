@@ -85,6 +85,7 @@ async fn main() -> Result<(), MainError> {
             .configure(routes::auth_routes::config)
             .configure(routes::employe_routes::config)
             .configure(routes::admin_routes::config)
+            .configure(routes::conge_routes::config)
     })
     .bind((address, port))
     .map_err(|err| MainError {

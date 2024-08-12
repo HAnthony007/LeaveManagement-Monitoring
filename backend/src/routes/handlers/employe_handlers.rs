@@ -75,11 +75,11 @@ pub struct UserId {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SoldeData {
-    j_aqui_sld: Decimal,
-    j_pris_sld: Decimal,
-    j_reste_sld: Decimal,
-    mois_sld: i32,
-    annee_sld: i32,
+    pub j_aqui_sld: Decimal,
+    pub j_pris_sld: Decimal,
+    pub j_reste_sld: Decimal,
+    pub mois_sld: i32,
+    pub annee_sld: i32,
 }
 
 

@@ -2,6 +2,7 @@
 
 pub mod prelude;
 
+pub mod conge;
 pub mod departement;
 pub mod employe;
 pub mod solde;
