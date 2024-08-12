@@ -2,3 +2,4 @@
 
 pub use super::departement::Entity as Departement;
 pub use super::employe::Entity as Employe;
+pub use super::solde::Entity as Solde;

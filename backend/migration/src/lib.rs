@@ -3,6 +3,7 @@ pub use sea_orm_migration::prelude::*;
 mod m20240723_134332_create_departement_table;
 mod m20240723_142314_create_employe_table;
 mod m20240808_074507_create_foreign_keys;
+mod m20240812_055100_create_solde_table;
 
 pub struct Migrator;
 
@@ -13,6 +14,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20240723_134332_create_departement_table::Migration),
             Box::new(m20240723_142314_create_employe_table::Migration),
             Box::new(m20240808_074507_create_foreign_keys::Migration),
+            Box::new(m20240812_055100_create_solde_table::Migration),
         ]
     }
 }

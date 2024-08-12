@@ -1,7 +1,7 @@
 use actix_web::{
     delete, get, post, web::{self}
 };
-use sea_orm::{ActiveModelTrait, EntityTrait, ModelTrait, Set};
+use sea_orm::{prelude::Decimal, ActiveModelTrait, ColumnTrait, EntityTrait, ModelTrait, QueryFilter, QueryOrder, Set};
 use serde::{Deserialize, Serialize};
 
 use crate::utils::{api_response::ApiResponse, app_state, jwt::Claims};
@@ -15,6 +15,18 @@ pub struct UserWithDep {
     pub email_empl: String,
     pub role: String,
     pub departement: Option<DepartementData>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct UserWithDepSolde {
+    pub id_empl: String,
+    pub n_matricule: String,
+    pub nom_empl: String,
+    pub prenom_empl: Option<String>,
+    pub email_empl: String,
+    pub role: String,
+    pub departement: Option<DepartementData>,
+    pub solde: Option<SoldeData>,
 }
 
 
@@ -61,12 +73,21 @@ pub struct UserId {
     id_empl: String,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SoldeData {
+    j_aqui_sld: Decimal,
+    j_pris_sld: Decimal,
+    j_reste_sld: Decimal,
+    mois_sld: i32,
+    annee_sld: i32,
+}
+
 
 #[get("/me")]
 pub async fn me(
     app_state: web::Data<app_state::AppState>,
     claim_data: Claims,
-) -> Result<ApiResponse<UserWithDep>, ApiResponse<()>> {
+) -> Result<ApiResponse<UserWithDepSolde>, ApiResponse<()>> {
     let employe = entity::employe::Entity::find_by_id(claim_data.id)
         .one(&app_state.db)
         .await
@@ -109,25 +130,54 @@ pub async fn me(
         
     };
 
+    let solde = entity::solde::Entity::find()
+        .filter(entity::solde::Column::IdEmpl.eq(employe.id_empl.clone()))
+        .order_by_desc(entity::solde::Column::AnneeSld)
+        .order_by_desc(entity::solde::Column::MoisSld)
+        .one(&app_state.db)
+        .await
+        .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
 
-    let employe_model = UserWithDep {
-        id_empl: employe.id_empl,
-        n_matricule: employe.n_matricule,
-        nom_empl: employe.nom_empl,
-        prenom_empl: employe.prenom_empl,
-        email_empl: employe.email_empl,
-        role: employe.role,
+
+    let employe_model = UserWithDepSolde {
+        id_empl: employe.id_empl.clone(),
+        n_matricule: employe.n_matricule.clone(),
+        nom_empl: employe.nom_empl.clone(),
+        prenom_empl: employe.prenom_empl.clone(),
+        email_empl: employe.email_empl.clone(),
+        role: employe.role.clone(),
         departement: departement.map(|dep| DepartementData {
-            code_dep: dep.code_dep,
-            nom_dep: dep.nom_dep,
-            chef_dep: chef_dep.map(|chef| UserInfo {
-                n_matricule: chef.n_matricule,
-                id_dep: chef.id_dep,
-                nom_empl: chef.nom_empl,
-                prenom_empl: chef.prenom_empl,
-                email_empl: chef.email_empl,
-                role: chef.role
+            code_dep: dep.code_dep.clone(),
+            nom_dep: dep.nom_dep.clone(),
+            chef_dep: chef_dep.map(|chef| {
+                if chef.n_matricule == employe.n_matricule {
+                    Some(UserInfo {
+                        n_matricule: "me".to_string(),
+                        id_dep: chef.id_dep,
+                        nom_empl: chef.nom_empl,
+                        prenom_empl: chef.prenom_empl,
+                        email_empl: chef.email_empl,
+                        role: chef.role
+                    })
+                } else {
+                    Some(UserInfo {
+                        n_matricule: chef.n_matricule,
+                        id_dep: chef.id_dep,
+                        nom_empl: chef.nom_empl,
+                        prenom_empl: chef.prenom_empl,
+                        email_empl: chef.email_empl,
+                        role: chef.role
+                    })
+                }
             })
+            .flatten()
+        }),
+        solde: solde.map(|sld| SoldeData {
+            j_aqui_sld: sld.j_aqui_sld,
+            j_pris_sld: sld.j_pris_sld,
+            j_reste_sld: sld.j_reste_sld,
+            mois_sld: sld.mois_sld,
+            annee_sld: sld.annee_sld
         })
     };
 
@@ -143,7 +193,7 @@ pub async fn me(
 #[get("/all_employe")]
 pub async fn all_employe(
     app_state: web::Data<app_state::AppState>,
-) -> Result<ApiResponse<Vec<UserWithDep>>, ApiResponse<()>> {
+) -> Result<ApiResponse<Vec<UserWithDepSolde>>, ApiResponse<()>> {
     let employees = entity::employe::Entity::find()
         .all(&app_state.db)
         .await
@@ -166,7 +216,15 @@ pub async fn all_employe(
                 None => None,
             };
 
-            Ok(UserWithDep {
+            let solde = entity::solde::Entity::find()
+                .filter(entity::solde::Column::IdEmpl.eq(employee.id_empl.clone()))
+                .order_by_desc(entity::solde::Column::AnneeSld)
+                .order_by_desc(entity::solde::Column::MoisSld)
+                .one(&app_state.db)
+                .await
+                .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
+
+            Ok(UserWithDepSolde {
                 id_empl: employee.id_empl,
                 n_matricule: employee.n_matricule,
                 nom_empl: employee.nom_empl,
@@ -184,6 +242,13 @@ pub async fn all_employe(
                         email_empl: chef.email_empl,
                         role: chef.role,
                     }),
+                }),
+                solde: solde.map(|sld| SoldeData {
+                    j_aqui_sld: sld.j_aqui_sld,
+                    j_pris_sld: sld.j_pris_sld,
+                    j_reste_sld: sld.j_reste_sld,
+                    mois_sld: sld.mois_sld,
+                    annee_sld: sld.annee_sld
                 }),
             })
         }
