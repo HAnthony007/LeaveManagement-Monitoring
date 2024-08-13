@@ -10,8 +10,8 @@ pub struct Model {
     pub id_empl: String,
     pub date_dmd_cong: DateTime,
     pub motif_cong: String,
-    pub date_deb_cong: Date,
-    pub date_fin_cong: Date,
+    pub date_deb_cong: DateTime,
+    pub date_fin_cong: DateTime,
     #[sea_orm(column_type = "Decimal(Some((4, 1)))")]
     pub nb_jour_cong: Decimal,
     pub status_cong: String,

@@ -22,10 +22,10 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(CONGE::IdEmpl).string().not_null())
                     .col(ColumnDef::new(CONGE::DateDmdCong).timestamp().not_null())
                     .col(ColumnDef::new(CONGE::MotifCong).string().not_null())
-                    .col(ColumnDef::new(CONGE::DateDebCong).date().not_null())
-                    .col(ColumnDef::new(CONGE::DateFinCong).date().not_null())
+                    .col(ColumnDef::new(CONGE::DateDebCong).timestamp().not_null())
+                    .col(ColumnDef::new(CONGE::DateFinCong).timestamp().not_null())
                     .col(ColumnDef::new(CONGE::NbJourCong).decimal_len(4, 1).not_null())
-                    .col(ColumnDef::new(CONGE::StatusCong).string().not_null().default("En attente"))
+                    .col(ColumnDef::new(CONGE::StatusCong).string().default("En attente").not_null())
                     .col(ColumnDef::new(CONGE::DateTraitCong).timestamp())
                     .foreign_key(
                         ForeignKey::create()
