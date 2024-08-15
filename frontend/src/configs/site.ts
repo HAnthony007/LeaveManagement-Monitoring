@@ -52,6 +52,25 @@ export const statuses = [
     },
 ]
 
+export const statusCong = [
+    {
+        value: "En attente",
+        label: "En attente RH",
+    },
+    {
+        value: "En attente superieur",
+        label: "En attente superieur",
+    },
+    {
+        value: "Aprouver",
+        label: "Aprouver",
+    },
+    {
+        value: "Refuser",
+        label: "Refuser",
+    }
+]
+
 export const priorities = [
     {
         label: "Low",

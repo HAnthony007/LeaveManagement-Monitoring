@@ -7,8 +7,8 @@ import { toast } from "sonner";
 import useSWR, { mutate } from "swr"
 
 
-export function useAllEmploye() {
-    const { data: users, error, isLoading } = useSWR<ApiResponse<User[]>>(`${apiUrl}/employe/all_employe`,
+export function useAllUsers() {
+    const { data: users, error, isLoading } = useSWR<ApiResponse<User[]>>(`${apiUrl}/employe/secure/all_user`,
         fetcher,
         {
             onError: (error) => {
@@ -18,9 +18,10 @@ export function useAllEmploye() {
         },
     );
 
+
     const updateUserData = async () => {
         try {
-            await mutate(`${apiUrl}/employe/all_employe`);
+            await mutate(`${apiUrl}/employe/secure/all_user`);
         } catch (error) {
             console.error("Error updating user data", error);
             toast.error("Unse erreur est survenue lors de la mise a jour de donne des employes");
@@ -32,5 +33,33 @@ export function useAllEmploye() {
         isLoading,
         error: error?.message || null,
         updateUserData
+    };
+}
+
+export function useAllEmployes() {
+    const { data: employes, error, isLoading } = useSWR<ApiResponse<User[]>>(`${apiUrl}/employe/secure/all_employe`,
+        fetcher,
+        {
+            onError: (error) => {
+                console.error("An error occurred during fetch", error)
+                toast.error("Une erreur est survenue lors de la sélection des employés")
+            },
+        },
+    );
+
+    const updateEmployeData = async () => {
+        try {
+            await mutate(`${apiUrl}/employe/secure/all_employe`);
+        } catch (error) {
+            console.error("Error updating user data", error);
+            toast.error("Unse erreur est survenue lors de la mise a jour de donne des employes");
+        }
+    }
+
+    return {
+        employes: employes?.data || [],
+        isLoading,
+        error: error?.message || null,
+        updateEmployeData
     };
 }

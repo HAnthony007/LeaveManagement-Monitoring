@@ -16,6 +16,7 @@ struct DepartementModel {
 
 #[derive(Debug, Serialize, Deserialize)]
 struct DepartementInfo {
+    pub id_dep: String,
     pub code_dep: String,
     pub nom_dep: String,
     pub chef_dep: Option<UserInfo>,
@@ -102,6 +103,7 @@ pub async fn all_departement(
                 None => None,
             };
             Ok(DepartementInfo {
+                id_dep: dep.id_dep,
                 code_dep: dep.code_dep,
                 nom_dep: dep.nom_dep,
                 chef_dep: chef_dep,

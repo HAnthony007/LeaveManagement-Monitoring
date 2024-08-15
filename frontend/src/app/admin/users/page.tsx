@@ -2,10 +2,10 @@
 import { AddUser } from "@/components/AddUser";
 import { columnsUsers } from "@/components/dataListe/columns";
 import { DataTable } from "@/components/dataListe/data-table";
-import { useAllEmploye } from "@/hooks/useAllEmploye";
+import { useAllUsers } from "@/hooks/useAllEmploye";
 
 export default function UsersPage() {
-  const { users } = useAllEmploye();
+  const { users } = useAllUsers();
 
   console.log("Voici les users: ", users);
 
@@ -13,7 +13,7 @@ export default function UsersPage() {
   <div className=" h-full flex-1 flex-col space-y-1 p-8 md:flex">
       <div className="flex items-center justify-between space-y-2">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Bienvenue a nouveau</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Liste des Employe</h2>
           <p className="text-muted-foreground">
             Voici la liste de tous les utilisateurs.
           </p>

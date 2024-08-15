@@ -13,7 +13,7 @@ import { Separator } from "./ui/separator"
 import { useRegister } from "@/hooks/useAuth"
 import { toast as toastSonner } from 'sonner';
 import { EditIcon } from "./icon/iconApp"
-import { useAllEmploye } from "@/hooks/useAllEmploye"
+import { useAllUsers } from "@/hooks/useAllEmploye"
 
 type addUserProps = {
     departement?: Departement;
@@ -21,7 +21,7 @@ type addUserProps = {
 
 export const AddDepartement = ({ departement }: addUserProps) => {
 
-    const { users } = useAllEmploye();
+    const { users } = useAllUsers();
     const { add } = useAddDepartement();
     const { updateDepartementData } = useAllDepartement();
     const { updateDepartement } = useUpdateDepartement();

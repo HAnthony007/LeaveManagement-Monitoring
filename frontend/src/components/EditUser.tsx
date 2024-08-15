@@ -5,7 +5,7 @@ import { Input } from "./ui/input"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "./ui/use-toast"
-import { userRegister, userRegisterType } from "@/schemas/schemaTable"
+import { userRegister, userRegisterType, userSchema, userType, userWithoutDepartement, userWithoutDepartementType } from "@/schemas/schemaTable"
 import { useAllDepartement } from "@/hooks/useDepartement"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { Departement } from '@/types/Employe';
@@ -13,32 +13,31 @@ import { Separator } from "./ui/separator"
 import { useRegister } from "@/hooks/useAuth"
 import { toast as toastSonner } from 'sonner';
 import { EditIcon } from "./icon/iconApp"
-import { useAllUsers } from "@/hooks/useAllEmploye"
+import { useUpdateUser } from "@/hooks/useEmploye"
 
-type addUserProps = {
-    user?: userRegisterType;
+type thisUserProps = {
+    user: userType;
 }
 
-export const AddUser = ({ user }: addUserProps) => {
+export const EditUser = ({ user }: thisUserProps) => {
 
     const { departements } = useAllDepartement();
-    const { updateUserData } = useAllUsers();
-    const { register } = useRegister();
+    const { updateUser } = useUpdateUser();
+    console.log("Departement:")
 
-    const form = useForm<userRegisterType>({
-        resolver: zodResolver(userRegister),
+    const form = useForm<userWithoutDepartementType>({
+        resolver: zodResolver(userWithoutDepartement),
         defaultValues: {
             n_matricule: user?.n_matricule || "",
-            id_dep: "",
+            id_dep: user?.departement?.nom_dep || "",
             nom_empl: user?.nom_empl || "",
             prenom_empl: user?.prenom_empl || "",
             email_empl: user?.email_empl || "",
-            passw_empl: user?.passw_empl || "",
-            role: user?.role || "employe",
+            role: user?.role || "",
         },
     })
 
-    async function onSubmit(data: userRegisterType) {
+    async function onSubmit(data: userWithoutDepartementType) {
         toast({
             title: "You submitted the following values:",
             description: (
@@ -48,13 +47,7 @@ export const AddUser = ({ user }: addUserProps) => {
             ),
         })
         try {
-            if (user) {
-                toastSonner.success("Modification reussie");
-            } else {
-                form.reset();
-                await register(data);
-                updateUserData();
-            }
+            await updateUser(user.id_empl, data);
             form.reset();
         } catch (error) {
             console.error("Erreur lors de l'enregistrement")
@@ -68,16 +61,15 @@ export const AddUser = ({ user }: addUserProps) => {
 
     return (
         <Dialog>
-            <DialogTrigger asChild className={ user ? "m-3" : "m-10"}>
-                { user ? 
-                <EditIcon />: <Button>Ajouter</Button> }
+            <DialogTrigger asChild className="m-3">
+                <EditIcon />
             </DialogTrigger>
             <DialogContent className="sm:max-w-[850px]">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
                         <DialogHeader>
-                            <DialogTitle>{ user ? "Modification utilisateur" : "Ajout utilisateur"}</DialogTitle>
+                            <DialogTitle>Edit {user.nom_empl} {user.prenom_empl}</DialogTitle>
                             <DialogDescription>
                                 Make changes to your profile here. Click save when you&apos;re done.
                             </DialogDescription>
@@ -188,19 +180,6 @@ export const AddUser = ({ user }: addUserProps) => {
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
                                         <Input placeholder="Votre email" type="email" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="passw_empl"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Mot de Passe</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Votre Mot de passe" type="password" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

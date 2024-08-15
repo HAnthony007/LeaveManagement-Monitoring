@@ -2,10 +2,10 @@
 import { columnsUsers } from "@/components/dataListe/columns";
 import { DataTable } from "@/components/dataListe/data-table";
 import { UserNav } from "@/components/dataListe/user-nav";
-import { useAllEmploye } from "@/hooks/useAllEmploye";
+import { useAllEmployes } from "@/hooks/useAllEmploye";
 
 export default function UsersPage() {
-  const { users, error, isLoading } = useAllEmploye()
+  const { employes, error, isLoading } = useAllEmployes()
 
   return (
     <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
@@ -20,7 +20,7 @@ export default function UsersPage() {
           <UserNav />
         </div>
       </div>
-      <DataTable data={users} columns={columnsUsers} />
+      <DataTable data={employes} columns={columnsUsers} />
     </div>
   );
 }

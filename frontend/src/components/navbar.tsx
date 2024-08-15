@@ -13,12 +13,11 @@ import { useAuthStore } from "@/stores/AuthStore"
 import { ToggleTheme } from '@/components/themes/ToggleTheme';
 import { toast } from "sonner"
 
-
 export const NavBar = () => {
     const pathname = usePathname();
     const router = useRouter();
     const isActive = (route: string) => pathname.includes(route);
-    const {user} = useAuthStore();
+    const { user } = useAuthStore();
     const userRole = user?.role.toLocaleLowerCase();
     const role = (userRole === "admin" || isActive("/admin")) ? siteConfig.navAdmin : (userRole === "rh" || isActive("/rh")) ? siteConfig.navRH : (userRole === "managers" || isActive("/manager")) ? siteConfig.navManager : siteConfig.navEmploye;
 
@@ -89,19 +88,33 @@ export const NavBar = () => {
                 <ToggleTheme />
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="secondary" size="icon" className="rounded-full">
-                            <Avatar>
-                                <AvatarImage src="/public/avatar.jpg" />
-                                <AvatarFallback>A.H.</AvatarFallback>
+                        <Button variant="secondary" size="icon" className="relative h-8 w-8 rounded-full">
+                            <Avatar className="h-9 w-9">
+                                <AvatarImage src="/avatar.jpg" />
+                                <AvatarFallback>{user?.nom_empl.toUpperCase()[0]}.{user?.prenom_empl.toUpperCase()[0]}</AvatarFallback>
                             </Avatar>
                             <span className="sr-only">Toggle user menu</span>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuLabel className="font-normal">
+                            <div className="flex flex-col space-y-1">
+                                <p className="text-sm font-medium leading-none">
+                                    {user?.nom_empl} {user?.prenom_empl}
+                                </p>
+                                <p className="text-xs leading-none text-muted-foreground">
+                                {
+                                    user?.email_empl
+                                }
+                                </p>
+                            </div>
+                        </DropdownMenuLabel>
+
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Settings</DropdownMenuItem>
-                        <DropdownMenuItem>Support</DropdownMenuItem>
+
+                        <DropdownMenuItem onClick={() => router.push(`/${user?.role.toLocaleLowerCase()}/profile`)}>
+                            Your profile
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>
                             <Button variant="ghost" onClick={handleLogout}>

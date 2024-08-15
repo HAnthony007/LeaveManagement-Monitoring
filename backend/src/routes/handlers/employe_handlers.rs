@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::utils::{api_response::ApiResponse, app_state, jwt::Claims};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct UserWithDep {
     pub id_empl: String,
     pub n_matricule: String,
@@ -17,7 +17,7 @@ pub struct UserWithDep {
     pub departement: Option<DepartementData>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct UserWithDepSolde {
     pub id_empl: String,
     pub n_matricule: String,
@@ -25,6 +25,7 @@ pub struct UserWithDepSolde {
     pub prenom_empl: Option<String>,
     pub email_empl: String,
     pub role: String,
+    pub status: String,
     pub departement: Option<DepartementData>,
     pub solde: Option<SoldeData>,
 }
@@ -45,6 +46,12 @@ pub struct DepartementData {
     pub code_dep: String,
     pub nom_dep: String,
     pub chef_dep: Option<UserInfo>,
+}
+
+#[derive( Debug, Serialize, Deserialize)]
+pub struct DepartementInfo{
+    pub code_dep: String,
+    pub nom_dep: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -146,6 +153,7 @@ pub async fn me(
         prenom_empl: employe.prenom_empl.clone(),
         email_empl: employe.email_empl.clone(),
         role: employe.role.clone(),
+        status: employe.status.clone(),
         departement: departement.map(|dep| DepartementData {
             code_dep: dep.code_dep.clone(),
             nom_dep: dep.nom_dep.clone(),
@@ -190,11 +198,13 @@ pub async fn me(
 }
 
 
-#[get("/all_employe")]
-pub async fn all_employe(
+#[get("/all_user")]
+pub async fn all_user(
     app_state: web::Data<app_state::AppState>,
+    claims: Claims,
 ) -> Result<ApiResponse<Vec<UserWithDepSolde>>, ApiResponse<()>> {
     let employees = entity::employe::Entity::find()
+        .filter(entity::employe::Column::IdEmpl.ne(claims.id))
         .all(&app_state.db)
         .await
         .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
@@ -231,6 +241,7 @@ pub async fn all_employe(
                 prenom_empl: employee.prenom_empl,
                 email_empl: employee.email_empl,
                 role: employee.role,
+                status: employee.status,
                 departement: departement.map(|dep| DepartementData {
                     code_dep: dep.code_dep,
                     nom_dep: dep.nom_dep,
@@ -260,13 +271,92 @@ pub async fn all_employe(
     Ok(ApiResponse::new(
         200,
         true,
-        "All employees".to_string(),
+        "All user fetched successfully".to_string(),
+        Some(employee_models),
+    ))
+}
+
+#[get("/all_employe")]
+pub async fn all_employe(
+    app_state: web::Data<app_state::AppState>,
+    claims: Claims,
+) -> Result<ApiResponse<Vec<UserWithDepSolde>>, ApiResponse<()>> {
+    let employees = entity::employe::Entity::find()
+        .filter(entity::employe::Column::IdEmpl.ne(claims.id))
+        .filter(entity::employe::Column::Role.eq("employe"))
+        .all(&app_state.db)
+        .await
+        .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
+
+    let employee_models = futures::future::join_all(employees.into_iter().map(|employee| {
+        let app_state = app_state.clone();
+        async move {
+            let departement = entity::departement::Entity::find_by_id(employee.id_dep)
+                .one(&app_state.db)
+                .await
+                .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
+            let chef_dep = match &departement {
+                Some(dep) => {
+                    entity::employe::Entity::find_by_id(dep.chef_dep.clone().unwrap_or_default())
+                        .one(&app_state.db)
+                        .await
+                        .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?
+                }
+                None => None,
+            };
+
+            let solde = entity::solde::Entity::find()
+                .filter(entity::solde::Column::IdEmpl.eq(employee.id_empl.clone()))
+                .order_by_desc(entity::solde::Column::AnneeSld)
+                .order_by_desc(entity::solde::Column::MoisSld)
+                .one(&app_state.db)
+                .await
+                .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
+
+            Ok(UserWithDepSolde {
+                id_empl: employee.id_empl,
+                n_matricule: employee.n_matricule,
+                nom_empl: employee.nom_empl,
+                prenom_empl: employee.prenom_empl,
+                email_empl: employee.email_empl,
+                role: employee.role,
+                status: employee.status,
+                departement: departement.map(|dep| DepartementData {
+                    code_dep: dep.code_dep,
+                    nom_dep: dep.nom_dep,
+                    chef_dep: chef_dep.map(|chef| UserInfo {
+                        n_matricule: chef.n_matricule,
+                        id_dep: chef.id_dep,
+                        nom_empl: chef.nom_empl,
+                        prenom_empl: chef.prenom_empl,
+                        email_empl: chef.email_empl,
+                        role: chef.role,
+                    }),
+                }),
+                solde: solde.map(|sld| SoldeData {
+                    j_aqui_sld: sld.j_aqui_sld,
+                    j_pris_sld: sld.j_pris_sld,
+                    j_reste_sld: sld.j_reste_sld,
+                    mois_sld: sld.mois_sld,
+                    annee_sld: sld.annee_sld
+                }),
+            })
+        }
+    }))
+    .await
+    .into_iter()
+    .collect::<Result<Vec<_>, _>>()?;
+
+    Ok(ApiResponse::new(
+        200,
+        true,
+        "All employees fetched successfully".to_string(),
         Some(employee_models),
     ))
 }
 
 
-#[post("/update_employe/{user_id}")]
+#[post("/update_employe/{id_empl}")]
 pub async fn update_employe(
     app_state: web::Data<app_state::AppState>,
     path: web::Path<UserId>,
@@ -293,6 +383,7 @@ pub async fn update_employe(
     let mut user_model: entity::employe::ActiveModel = user_model.into();
 
     user_model.n_matricule = Set(employe_json.n_matricule.clone());
+    user_model.id_dep = Set(employe_json.id_dep.clone());
     user_model.nom_empl = Set(employe_json.nom_empl.clone());
     user_model.prenom_empl = Set(employe_json.prenom_empl.clone());
     user_model.email_empl = Set(employe_json.email_empl.clone());
