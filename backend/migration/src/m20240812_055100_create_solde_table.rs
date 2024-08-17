@@ -24,7 +24,7 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(SOLDE::JAquiSld)
                             .decimal_len(4, 1)
                             .not_null()
-                            .default(2.5),
+                            .default(50.5),
                     )
                     .col(
                         ColumnDef::new(SOLDE::JPrisSld)
@@ -36,7 +36,7 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(SOLDE::JResteSld)
                             .decimal_len(4, 1)
                             .not_null()
-                            .default(2.5),
+                            .default(50.5),
                     )
                     .col(ColumnDef::new(SOLDE::MoisSld).integer().not_null())
                     .col(ColumnDef::new(SOLDE::AnneeSld).integer().not_null())

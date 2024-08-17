@@ -39,6 +39,77 @@ struct UserId {
     id_empl: String,
 }
 
+
+// #[post("/update_solde")]
+// pub async fn update_solde(
+//     app_state: web::Data<app_state::AppState>,
+// ) -> Result<ApiResponse<()>, ApiResponse<()>> {
+//     let employees = entity::employe::Entity::find()
+//         .all(&app_state.db)
+//         .await
+//         .map_err(|e| {
+//             println!("{:?}", e);
+//             ApiResponse::new(
+//                 500,
+//                 false,
+//                 "Error updating solde".to_owned(),
+//                 None
+//             )
+//         })?;
+    
+//     for employee in employees {
+//         let latest_solde = entity::solde::Entity::find()
+//             .filter(entity::solde::Column::IdEmpl.eq(employee.id_empl.clone()))
+//             .order_by_desc(entity::solde::Column::AnneeSld)
+//             .order_by_desc(entity::solde::Column::MoisSld)
+//             .one(&app_state.db)
+//             .await
+//             .map_err(|e| {
+//                 println!("{:?}", e);
+//                 ApiResponse::new(
+//                     500,
+//                     false,
+//                     "Error updating solde".to_owned(),
+//                     None
+//                 )
+//             })?;
+        
+//         let new_aqui_sld = match latest_solde {
+//             Some(solde) => solde.j_aqui_sld.expect("J'aqui_sld is not set") + Decimal::from_f64(2.5).unwrap_or_default(),
+//             None => Decimal::from_f64(2.5).unwrap(),
+//         };
+
+//         let generate_id_solde = generate_random_id(&employee.n_matricule);
+//         let solde_model = entity::solde::ActiveModel {
+//             id_sld: Set(generate_id_solde),
+//             id_empl: Set(employee.id_empl.clone()),
+//             mois_sld: Set(chrono::Local::now().month() as i32),
+//             annee_sld: Set(chrono::Local::now().year() as i32),
+//             j_aqui_sld: Set(Decimal::from_f64(2.5).unwrap()),
+            
+//             ..Default::default()
+//         }
+//         .insert(&app_state.db)
+//         .await
+//         .map_err(|e| {
+//             println!("{:?}", e);
+//             ApiResponse::new(
+//                 500,
+//                 false,
+//                 "Error updating solde".to_owned(),
+//                 None
+//             )
+//         })?;
+//     }
+
+//     Ok(ApiResponse::new(
+//         200,
+//         true,
+//         "User registered Successfully".to_owned(),
+//         None
+//     ))
+// }
+
 #[post("/add_departement")]
 pub async fn add_departement(
     app_state: web::Data<app_state::AppState>,

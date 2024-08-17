@@ -35,6 +35,62 @@ export function useAllConge() {
     }
 }
 
+export function useAllMyConge() {
+    const { data: myConge, error, isLoading } = useSWR<ApiResponse<AllConge[]>>(`${apiUrl}/conge/secure/all_my_conge`,
+        fetcher,
+        {
+            onError: (error) => {
+                console.error("An error occurred during fetch", error)
+                toast.error("Une erreur est survenue lors de la sélection des conges")
+            },
+        },
+    );
+
+    const updateMyCongeData = async () => {
+        try {
+            await mutate(`${apiUrl}/conge/secure/all_my_conge`);
+        } catch (error) {
+            console.error("Error updating user data", error);
+            toast.error("Unse erreur est survenue lors de la mise a jour de donne des conges");
+        }
+    }
+
+    return {
+        myConge: myConge?.data || [],
+        isLoading,
+        error: error?.message || null,
+        updateMyCongeData
+    }
+}
+
+export function useAllMyEmployeConge() {
+    const { data: myEmployeConge, error, isLoading } = useSWR<ApiResponse<AllConge[]>>(`${apiUrl}/conge/secure/all_my_employe_conge`,
+        fetcher,
+        {
+            onError: (error) => {
+                console.error("An error occurred during fetch", error)
+                toast.error("Une erreur est survenue lors de la sélection des conges")
+            },
+        },
+    );
+
+    const updateMyEmployeCongeData = async () => {
+        try {
+            await mutate(`${apiUrl}/conge/secure/all_my_employe_conge`);
+        } catch (error) {
+            console.error("Error updating user data", error);
+            toast.error("Unse erreur est survenue lors de la mise a jour de donne des conges");
+        }
+    }
+
+    return {
+        myEmployeConge: myEmployeConge?.data || [],
+        isLoading,
+        error: error?.message || null,
+        updateMyEmployeCongeData
+    }
+}
+
 export const useAddConge = () => {
 
     const add_my_conge = async (data: myCongeType) => {

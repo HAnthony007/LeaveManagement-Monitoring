@@ -3,6 +3,7 @@ import { useAuthStore } from "@/stores/AuthStore";
 import axiosInstance from "@/utils/axiosInstance";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { User } from '@/types/Employe';
 
 
 export const useLogin = () => {
@@ -20,9 +21,7 @@ export const useLogin = () => {
             const role = user.role.toLowerCase();
             setUser(user);
             setToken(token, role);
-
             toast.success("Login Successfully");
-
             router.push(`/${user.role.toLowerCase()}/dashboard`);
             console.log("Voici le user: ")
             console.log(user);

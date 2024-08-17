@@ -10,6 +10,7 @@ pub fn config(config: &mut web::ServiceConfig) {
         .service(
             web::scope("/secure")
                 .wrap(from_fn(middleware::auth_midllewares::check_auth_middleware))
+                
         )
         .service(
             web::scope("/auth")

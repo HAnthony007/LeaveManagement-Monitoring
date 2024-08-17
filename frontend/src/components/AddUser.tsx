@@ -14,6 +14,7 @@ import { useRegister } from "@/hooks/useAuth"
 import { toast as toastSonner } from 'sonner';
 import { EditIcon } from "./icon/iconApp"
 import { useAllUsers } from "@/hooks/useAllEmploye"
+import { PasswordInput } from "./ui/input-password"
 
 type addUserProps = {
     user?: userRegisterType;
@@ -139,6 +140,7 @@ export const AddUser = ({ user }: addUserProps) => {
                                             </FormControl>
                                             <SelectContent>
                                                 <SelectItem value="employe">Employe</SelectItem>
+                                                <SelectItem value="chefDTP">Chef de Departement</SelectItem>
                                                 <SelectItem value="rh">Resource humaine</SelectItem>
                                                 <SelectItem value="admin">Administrateur</SelectItem>
                                             </SelectContent>
@@ -200,7 +202,7 @@ export const AddUser = ({ user }: addUserProps) => {
                                 <FormItem>
                                     <FormLabel>Mot de Passe</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Votre Mot de passe" type="password" {...field} />
+                                        <PasswordInput placeholder="Enter your password" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

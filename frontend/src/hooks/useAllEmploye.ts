@@ -63,3 +63,31 @@ export function useAllEmployes() {
         updateEmployeData
     };
 }
+
+export function useAllMyEmployes() {
+    const { data: myEmployes, error, isLoading } = useSWR<ApiResponse<User[]>>(`${apiUrl}/employe/secure/all_my_employe`,
+        fetcher,
+        {
+            onError: (error) => {
+                console.error("An error occurred during fetch", error)
+                toast.error("Une erreur est survenue lors de la sélection des employés")
+            },
+        },
+    );
+
+    const updateMyEmployeData = async () => {
+        try {
+            await mutate(`${apiUrl}/employe/secure/all_my_employe`);
+        } catch (error) {
+            console.error("Error updating user data", error);
+            toast.error("Unse erreur est survenue lors de la mise a jour de donne des employes");
+        }
+    }
+
+    return {
+        myEmployes: myEmployes?.data || [],
+        isLoading,
+        error: error?.message || null,
+        updateMyEmployeData
+    }
+}

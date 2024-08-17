@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import NavBarWrapper from "@/components/navbarWrapper";
 import Link from "next/link";
 import { Toaster as ToasterShadcn } from '../components/ui/toaster';
+import "react-big-calendar/lib/css/react-big-calendar.css";
 
 const inter = Inter({ subsets: ["latin"] });
 

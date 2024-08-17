@@ -25,7 +25,7 @@ import { Switch } from "./ui/switch"
 import { Input } from "./ui/input"
 import { InputDay } from "./ui/inputDays"
 import { myCongeSchema, myCongeType } from "@/schemas/schemaTable"
-import { useAddConge, useAllConge } from "@/hooks/useConge"
+import { useAddConge, useAllConge, useAllMyConge } from "@/hooks/useConge"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
 import { Separator } from "./ui/separator"
 import DatePicker, { DateRangeType } from "react-tailwindcss-datepicker"
@@ -36,7 +36,7 @@ export function AddConge() {
         resolver: zodResolver(myCongeSchema),
     })
 
-    const { updateCongeData } = useAllConge();
+    const { updateMyCongeData } = useAllMyConge();
 
     const { watch, setValue } = form;
     const debu_matin = watch("debut_matin");
@@ -77,7 +77,7 @@ export function AddConge() {
         })
         try {
             await add_my_conge(data);
-            updateCongeData();
+            updateMyCongeData();
             form.reset();
         } catch (error) {
             console.error("Error lors de l'enregistrement");

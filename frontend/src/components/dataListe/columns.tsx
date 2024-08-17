@@ -166,6 +166,164 @@ export const columnsDepartements: ColumnDef<departementType>[] = [
     },
 ]
 
+export const columnsMyConge: ColumnDef<AllConge>[] = [
+    {
+        id: "select",
+        header: ({ table }) => (
+            <Checkbox
+                checked={
+                    table.getIsAllPageRowsSelected() ||
+                    (table.getIsSomePageRowsSelected() && "indeterminate")
+                }
+                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                aria-label="Select all"
+                className="translate-y-[2px]"
+            />
+        ),
+        cell: ({ row }) => (
+            <Checkbox
+                checked={row.getIsSelected()}
+                onCheckedChange={(value) => row.toggleSelected(!!value)}
+                aria-label="Select row"
+                className="translate-y-[2px]"
+            />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+    },
+    {
+        accessorKey: "date_deb_cong",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Debut du Conge" />,
+        cell: ({ row }) => {
+            const dateDeb = parseISO(row.getValue("date_deb_cong"))
+            const formatteDate = format(dateDeb, "dd MMMM yyyy HH:mm:ss") 
+            return (
+            <div className="flex space-x-2">
+                <span className="max-w-[500px] truncate font-medium">
+                    {formatteDate}
+                </span>
+            </div>
+            )
+        },
+            enableSorting: false,
+        enableHiding: false,
+    },
+    {
+        accessorKey: "date_fin_cong",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Fin Conge" />,
+        cell: ({ row }) => {
+            const dateFin = parseISO(row.getValue("date_fin_cong"))
+            const formatteDate = format(dateFin, "dd MMMM yyyy HH:mm:ss") 
+            return (
+            <div className="flex space-x-2">
+                <span className="max-w-[500px] truncate font-medium">
+                    {formatteDate}
+                </span>
+            </div>
+            )
+        },
+    },
+    {
+        accessorKey: "motif_cong",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Motif" />,
+        cell: ({ row }) => <div>{row.getValue("motif_cong")}</div>,
+    },
+    {
+        accessorKey: "status_cong",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+        cell: ({ row }) => <div>{row.getValue("status_cong")}</div>,
+    },
+    {
+        id: "actions",
+        cell: ({ row }) => <DataTableRowActionsConge row={row} />,
+    },
+]
+
+export const columnsAllCongeEmploye: ColumnDef<AllConge>[] = [
+    {
+        id: "select",
+        header: ({ table }) => (
+            <Checkbox
+                checked={
+                    table.getIsAllPageRowsSelected() ||
+                    (table.getIsSomePageRowsSelected() && "indeterminate")
+                }
+                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                aria-label="Select all"
+                className="translate-y-[2px]"
+            />
+        ),
+        cell: ({ row }) => (
+            <Checkbox
+                checked={row.getIsSelected()}
+                onCheckedChange={(value) => row.toggleSelected(!!value)}
+                aria-label="Select row"
+                className="translate-y-[2px]"
+            />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+    },
+    {
+        accessorKey: "date_deb_cong",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Debut du Conge" />,
+        cell: ({ row }) => {
+            const dateDeb = parseISO(row.getValue("date_deb_cong"))
+            const formatteDate = format(dateDeb, "dd MMMM yyyy HH:mm:ss") 
+            return (
+            <div className="flex space-x-2">
+                <span className="max-w-[500px] truncate font-medium">
+                    {formatteDate}
+                </span>
+            </div>
+            )
+        },
+            enableSorting: false,
+        enableHiding: false,
+    },
+    {
+        accessorKey: "date_fin_cong",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Fin Conge" />,
+        cell: ({ row }) => {
+            const dateFin = parseISO(row.getValue("date_fin_cong"))
+            const formatteDate = format(dateFin, "dd MMMM yyyy HH:mm:ss") 
+            return (
+            <div className="flex space-x-2">
+                <span className="max-w-[500px] truncate font-medium">
+                    {formatteDate}
+                </span>
+            </div>
+            )
+        },
+    },
+    {
+        accessorKey: "motif_cong",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Motif" />,
+        cell: ({ row }) => <div>{row.getValue("motif_cong")}</div>,
+    },
+    {
+        accessorKey: "employe",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Chef Identifiant" />,
+        cell: ({ row }) => {
+            const employe = row.getValue("employe") as userWithoutDepartementType;
+            return (
+                <div>
+                    {employe ? employe?.nom_empl : "N/A"} {employe?.prenom_empl}
+                </div>
+            );
+        }
+    },
+    {
+        accessorKey: "status_cong",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+        cell: ({ row }) => <div>{row.getValue("status_cong")}</div>,
+    },
+
+    {
+        id: "actions",
+        cell: ({ row }) => <DataTableRowActionsConge row={row} />,
+    },
+]
 
 export const columnsAllConge: ColumnDef<AllConge>[] = [
     {

@@ -89,7 +89,6 @@ pub struct SoldeData {
     pub annee_sld: i32,
 }
 
-
 #[get("/me")]
 pub async fn me(
     app_state: web::Data<app_state::AppState>,
@@ -283,7 +282,8 @@ pub async fn all_employe(
 ) -> Result<ApiResponse<Vec<UserWithDepSolde>>, ApiResponse<()>> {
     let employees = entity::employe::Entity::find()
         .filter(entity::employe::Column::IdEmpl.ne(claims.id))
-        .filter(entity::employe::Column::Role.eq("employe"))
+        .filter(entity::employe::Column::Role.ne("admin"))
+        .filter(entity::employe::Column::Role.ne("rh"))
         .all(&app_state.db)
         .await
         .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
@@ -355,6 +355,107 @@ pub async fn all_employe(
     ))
 }
 
+#[get("/all_my_employe")]
+pub async fn all_my_employe(
+    app_state: web::Data<app_state::AppState>,
+    claims: Claims,
+) -> Result<ApiResponse<Vec<UserWithDepSolde>>, ApiResponse<()>> {
+
+    let chef_departement = entity::departement::Entity::find()
+        .filter(entity::departement::Column::ChefDep.eq(claims.id.clone()))
+        .one(&app_state.db)
+        .await
+        .map_err(|err| {
+            println!("{:?}", err);
+            ApiResponse::new(500, false, "Server Error".to_string(), None)
+        })?;
+
+    let chef_departement_id = match chef_departement {
+        Some(dept) => dept.id_dep,
+        None => {
+            return Ok(ApiResponse::new(
+                200,
+                true,
+                "No Department Found".to_string(),
+                Some(vec![]),
+            ));
+        }
+    };
+
+    let employees = entity::employe::Entity::find()
+        .filter(entity::employe::Column::IdDep.eq(chef_departement_id))
+        .filter(entity::employe::Column::IdEmpl.ne(claims.id))
+        .filter(entity::employe::Column::Role.eq("employe"))
+        .all(&app_state.db)
+        .await
+        .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
+
+    let employee_models = futures::future::join_all(employees.into_iter().map(|employee| {
+        let app_state = app_state.clone();
+        async move {
+            let departement = entity::departement::Entity::find_by_id(employee.id_dep)
+                .one(&app_state.db)
+                .await
+                .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
+            let chef_dep = match &departement {
+                Some(dep) => {
+                    entity::employe::Entity::find_by_id(dep.chef_dep.clone().unwrap_or_default())
+                        .one(&app_state.db)
+                        .await
+                        .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?
+                }
+                None => None,
+            };
+
+            let solde = entity::solde::Entity::find()
+                .filter(entity::solde::Column::IdEmpl.eq(employee.id_empl.clone()))
+                .order_by_desc(entity::solde::Column::AnneeSld)
+                .order_by_desc(entity::solde::Column::MoisSld)
+                .one(&app_state.db)
+                .await
+                .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
+
+            Ok(UserWithDepSolde {
+                id_empl: employee.id_empl,
+                n_matricule: employee.n_matricule,
+                nom_empl: employee.nom_empl,
+                prenom_empl: employee.prenom_empl,
+                email_empl: employee.email_empl,
+                role: employee.role,
+                status: employee.status,
+                departement: departement.map(|dep| DepartementData {
+                    code_dep: dep.code_dep,
+                    nom_dep: dep.nom_dep,
+                    chef_dep: chef_dep.map(|chef| UserInfo {
+                        n_matricule: chef.n_matricule,
+                        id_dep: chef.id_dep,
+                        nom_empl: chef.nom_empl,
+                        prenom_empl: chef.prenom_empl,
+                        email_empl: chef.email_empl,
+                        role: chef.role,
+                    }),
+                }),
+                solde: solde.map(|sld| SoldeData {
+                    j_aqui_sld: sld.j_aqui_sld,
+                    j_pris_sld: sld.j_pris_sld,
+                    j_reste_sld: sld.j_reste_sld,
+                    mois_sld: sld.mois_sld,
+                    annee_sld: sld.annee_sld
+                }),
+            })
+        }
+    }))
+    .await
+    .into_iter()
+    .collect::<Result<Vec<_>, _>>()?;
+
+    Ok(ApiResponse::new(
+        200,
+        true,
+        "All employees fetched successfully".to_string(),
+        Some(employee_models),
+    ))
+}
 
 #[post("/update_employe/{id_empl}")]
 pub async fn update_employe(

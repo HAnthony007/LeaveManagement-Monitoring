@@ -24,7 +24,7 @@ export type UserWithoutDepartement = {
     role: UserRole;
 }
 
-export type UserRole = 'employe' | 'rh' | 'admin'
+export type UserRole = 'employe' | 'chefdtp' | 'rh' | 'admin'
 
 export type Departement = {
     id_dep: string;

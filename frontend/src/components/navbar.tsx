@@ -19,7 +19,8 @@ export const NavBar = () => {
     const isActive = (route: string) => pathname.includes(route);
     const { user } = useAuthStore();
     const userRole = user?.role.toLocaleLowerCase();
-    const role = (userRole === "admin" || isActive("/admin")) ? siteConfig.navAdmin : (userRole === "rh" || isActive("/rh")) ? siteConfig.navRH : (userRole === "managers" || isActive("/manager")) ? siteConfig.navManager : siteConfig.navEmploye;
+    const chefDTP = user?.n_matricule == user?.departement?.chef_dep?.n_matricule;
+    const role = (userRole === "admin" || isActive("/admin")) ? siteConfig.navAdmin : (userRole === "rh" || isActive("/rh")) ? siteConfig.navRH : ( userRole == "chefdtp" || isActive("/chefdtp")) ? siteConfig.navChefDTP : siteConfig.navEmploye;
 
     const logout = useAuthStore((state) => state.logout);
     const handleLogout = () => {
@@ -116,8 +117,8 @@ export const NavBar = () => {
                             Your profile
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <Button variant="ghost" onClick={handleLogout}>
+                        <DropdownMenuItem  onClick={handleLogout}>
+                            <Button variant="ghost" >
                                 Logout
                             </Button>
                         </DropdownMenuItem>

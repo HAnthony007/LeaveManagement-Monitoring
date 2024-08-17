@@ -7,7 +7,7 @@ import {
     CrossCircledIcon,
     QuestionMarkCircledIcon,
     StopwatchIcon,
-} from "@radix-ui/react-icons"
+} from "@radix-ui/react-icons";
 
 export const labels = [
     {
@@ -22,7 +22,7 @@ export const labels = [
         value: "documentation",
         label: "Documentation",
     },
-]
+];
 
 export const statuses = [
     {
@@ -50,7 +50,7 @@ export const statuses = [
         label: "Canceled",
         icon: CrossCircledIcon,
     },
-]
+];
 
 export const statusCong = [
     {
@@ -68,8 +68,8 @@ export const statusCong = [
     {
         value: "Refuser",
         label: "Refuser",
-    }
-]
+    },
+];
 
 export const priorities = [
     {
@@ -87,17 +87,17 @@ export const priorities = [
         value: "high",
         icon: ArrowUpIcon,
     },
-]
+];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+export type SiteConfig = typeof siteConfig;
 
-export type SiteConfig = typeof siteConfig
-
-export const siteConfig ={
+export const siteConfig = {
     name: "Gestion et suivi de conge",
-    description: "Faire une application de gestion et suivi de conge des employes au seins de spat",
-    
+    description:
+        "Faire une application de gestion et suivi de conge des employes au seins de spat",
+
     navRH: [
         {
             label: "Dashboard",
@@ -147,22 +147,31 @@ export const siteConfig ={
         },
     ],
 
-    navManager: [
+    navChefDTP: [
         {
             label: "Dashboard",
-            href: "/manager/dashboard",
+            href: "/chefdtp/dashboard",
         },
         {
-            label: "Users",
-            href: "/manager/users",
+            label: "MonConge",
+            href: "/chefdtp/monConge",
+        },
+
+        {
+            label: "MyEmployes",
+            href: "/chefdtp/myEmploye",
         },
         {
-            label: "ListeConge",
-            href: "/manager/listeConge",
+            label: "DemandeConge",
+            href: "/chefdtp/listeConge",
+        },
+        {
+            label: "MonCalendrier",
+            href: "/chefdtp/monCalendrier",
         },
         {
             label: "Planing",
-            href: "/manager/planing",
+            href: "/chefdtp/planing",
         },
     ],
-}
+};

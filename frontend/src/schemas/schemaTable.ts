@@ -3,7 +3,7 @@ import { boolean, z } from "zod";
 // We're keeping a simple non-relational schema here.
 // IRL, you will have a schema for your data models.
 
-const userRoleSchema = z.enum(["employe", "rh", "admin"]);
+const userRoleSchema = z.enum(["employe", "chefdtp", "rh", "admin"]);
 
 export const userWithoutDepartement = z.object({
     n_matricule: z.string().min(2, "Matricule must be at least 2 characters"),

@@ -17,5 +17,6 @@ pub fn config(config: &mut web::ServiceConfig) {
         .service(
             web::scope("/admin")
             .service(handlers::admin_handlers::add_departement)
+            // .service(handlers::admin_handlers::update_solde)
         );
 }

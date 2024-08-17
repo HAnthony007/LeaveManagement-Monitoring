@@ -254,33 +254,13 @@ export function DataTableRowActionsConge({
     return (
         <div className="relative flex items-center gap-2">
             <TooltipProvider >
-                <Tooltip >
-                    <TooltipTrigger>
-                        <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                            <ViewEyeIcon />
-                        </span>
-                    </TooltipTrigger>
-                    <TooltipContent >
-                        Details
-                    </TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                    <TooltipTrigger >
-                        <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                            {/* <EditIcon /> */}
-                            {/* <AddUser user={row.original} />? */}
-                        </span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        Edit user
-                    </TooltipContent>
-                </Tooltip>
                 <Tooltip>
                     <TooltipTrigger>
                         <span className="text-lg text-danger cursor-pointer active:opacity-50 text-red-500 ">
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
-                                    <DeleteIcon />
+                                    {/* <DeleteIcon /> */}
+                                    <Button variant={"destructive"}>Annuler</Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>

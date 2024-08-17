@@ -1,15 +1,16 @@
 "use client"
 
 import { AddConge } from "@/components/AddConge"
-import { columnsAllConge, columnsUsers } from "@/components/dataListe/columns";
+import { columnsMyConge } from "@/components/dataListe/columns";
 import { DataTable } from "@/components/dataListe/data-table";
-import { useAllUsers } from "@/hooks/useAllEmploye";
-import { useAllConge } from "@/hooks/useConge"
+import { useAllMyConge } from "@/hooks/useConge"
 
 export default function MonCongePage() {
-  const { conge } = useAllConge();
-  const { users } = useAllUsers();
-  console.log("Voci les user conge: ", users);
+  // const { conge } = useAllConge();
+  const { myConge } = useAllMyConge();
+  console.log("Voici mon conge: ", myConge);  
+  // const { users } = useAllUsers();
+  // console.log("Voci les user conge: ", users);
 
   return (
     <div className=" h-full flex-1 flex-col space-y-8 p-8 md:flex">
@@ -25,7 +26,7 @@ export default function MonCongePage() {
         </div>
       </div>
 
-      {/* <DataTable data={conge} columns={columnsAllConge} /> */}
+      <DataTable data={myConge} columns={columnsMyConge} />
     </div>
   )
 }
