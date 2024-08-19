@@ -107,3 +107,39 @@ export const useAddConge = () => {
 
     return { add_my_conge };
 }
+
+export const useApproveConge = () => {
+
+    const approveConge = async (id_cong: string) => {
+        try {
+            const res = await axiosInstance.put(`/conge/secure/approve_conge/${id_cong}`);
+            if (!res.data.success) return toast.error(res.data.message);
+            
+            toast.success("Conge update Successfully: ", res.data.message);
+            return res.data;
+        } catch (error) {
+            console.error("An error occured during update conge");
+            throw error;
+        }
+    }
+
+    return { approveConge };
+}
+
+export const useDeclineConge = () => {
+
+    const declineConge = async (id_cong: string) => {
+        try {
+            const res = await axiosInstance.put(`/conge/secure/decline_conge/${id_cong}`);
+            if (!res.data.success) return toast.error(res.data.message);
+            
+            toast.success("Conge decline Successfully: ", res.data.message);
+            return res.data;
+        } catch (error) {
+            console.error("An error occured during update conge");
+            throw error;
+        }
+    }
+
+    return { declineConge };
+}

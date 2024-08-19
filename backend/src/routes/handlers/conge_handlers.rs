@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use actix_web::{get, post, web};
+use actix_web::{get, post, put, web};
 use chrono::{DateTime, Duration, Local, TimeZone, Utc};
 use num_traits::cast::ToPrimitive;
 use sea_orm::{prelude::Decimal, ActiveModelTrait, ColumnTrait, EntityTrait, IntoActiveModel, QueryFilter, QueryOrder, Set};
@@ -117,7 +117,7 @@ pub async fn add_my_conge(
         })?;
     
     let status_conge = match departement {
-        Some(dept) => "En attente RH".to_string(),
+        Some(_dept) => "En attente RH".to_string(),
         None => "En attente chef DTP".to_string(),
     };
 
@@ -436,5 +436,133 @@ pub async fn all_conge(
         true,
         "All conges with employee Information".to_string(),
         Some(conge_models),
+    ))
+}
+
+
+#[put("/approve_conge/{id_cong}")]
+pub async fn approve_conge(
+    app_state: web::Data<app_state::AppState>,
+    id_cong: web::Path<String>,
+) -> Result<ApiResponse<String>, ApiResponse<()>> {
+    let id_cong = id_cong.clone();
+    let conges = entity::conge::Entity::find_by_id(id_cong.clone())
+        .one(&app_state.db)
+        .await
+        .map_err(|e| {
+            println!("Error: {}", e);
+            ApiResponse::new(500, false, e.to_string(), None)
+        })?;
+    
+    let mut conge = match conges {
+        Some(conge) => conge.into_active_model(),
+        None => {
+            return Ok(ApiResponse::new(200, false, "conge not found".to_string(), None));
+        }
+    };
+
+    let new_status = match conge.status_cong.as_ref() {
+        s if s.contains("RH") => "Approuver".to_string(),
+        s if s.contains("DTP") => "En attente RH".to_string(),
+        _ => {
+            return Ok(ApiResponse::new(200, false, "Status actuel invalide".to_string(), None));
+        }
+    };
+
+    conge.status_cong = Set(new_status);
+
+    conge
+        .update(&app_state.db)
+        .await
+        .map_err(|err| {
+            println!("Error: {}", err);
+            ApiResponse::new(500, false, err.to_string(), None)
+        })?;
+
+    Ok(ApiResponse::new(
+        200, 
+        true, 
+        "Update conge Successfully".to_string(), 
+        None
+    ))
+}
+
+#[put("/decline_conge/{id_cong}")]
+pub async fn decline_conge(
+    app_state: web::Data<app_state::AppState>,
+    id_cong: web::Path<String>,
+) -> Result<ApiResponse<String>, ApiResponse<()>> {
+    let id_cong = id_cong.clone();
+    let conges = entity::conge::Entity::find_by_id(id_cong.clone())
+        .one(&app_state.db)
+        .await
+        .map_err(|e| {
+            println!("Error: {}", e);
+            ApiResponse::new(500, false, e.to_string(), None)
+        })?;
+    
+    let mut conge = match conges {
+        Some(conge) => conge.into_active_model(),
+        None => {
+            return Ok(ApiResponse::new(200, false, "conge not found".to_string(), None));
+        }
+    };
+
+    let solde_result = entity::solde::Entity::find()
+        .filter(entity::solde::Column::IdEmpl.eq(conge.id_empl.as_ref()))
+        .order_by_desc(entity::solde::Column::AnneeSld)
+        .order_by_desc(entity::solde::Column::MoisSld)
+        .one(&app_state.db)
+        .await
+        .map_err(|err| {
+            println!("Error: {}", err);
+            ApiResponse::new(500, false, err.to_string(), None)
+        })?;
+
+    let mut solde = match solde_result {
+        Some(solde) => solde.into_active_model(),
+        None => {
+            return Ok(ApiResponse::new(200, false, "solde not found".to_string(), None));
+        }
+    };
+
+    let nb_jours_f64 = conge.nb_jour_cong.as_ref().to_f64().unwrap().to_string();
+    let nb_jours_decimal = Decimal::from_str(&nb_jours_f64)
+        .map_err(|err| {
+            println!("Error: {}", err);
+            ApiResponse::new(500, false, err.to_string(), None)
+        })?;
+    
+    let new_j_pris_sld = solde.j_pris_sld.as_ref() - nb_jours_decimal;
+    let new_j_restant_sld = solde.j_reste_sld.as_ref() + nb_jours_decimal;
+
+    solde.j_pris_sld = Set(new_j_pris_sld);
+    solde.j_reste_sld = Set(new_j_restant_sld);
+
+    solde
+        .update(&app_state.db)
+        .await
+        .map_err(|err| {
+            println!("Error: {}", err);
+            ApiResponse::new(500, false, err.to_string(), None)
+        })?;
+
+    let new_status = "Refuser".to_string();
+
+    conge.status_cong = Set(new_status);
+
+    conge
+        .update(&app_state.db)
+        .await
+        .map_err(|err| {
+            println!("Error: {}", err);
+            ApiResponse::new(500, false, err.to_string(), None)
+        })?;
+
+    Ok(ApiResponse::new(
+        200, 
+        true, 
+        "Decline conge Successfully".to_string(), 
+        None
     ))
 }

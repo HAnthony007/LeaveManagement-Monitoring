@@ -11,6 +11,8 @@ pub fn config(config: &mut web::ServiceConfig) {
             .service(handlers::conge_handlers::add_conge)
             .service(handlers::conge_handlers::all_my_conge)
             .service(handlers::conge_handlers::all_my_employe_conge)
+            .service(handlers::conge_handlers::approve_conge)
+            .service(handlers::conge_handlers::decline_conge)
         )
         .service(web::scope("/conge")
             .service(handlers::conge_handlers::all_conge)

@@ -5,10 +5,11 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
 import { departementInfoType, departementType, soldeDataType, userType, userWithoutDepartementType } from "@/schemas/schemaTable";
 import { DataTableColumnHeader } from "./column-header";
-import { DataTableRowActionsConge, DataTableRowActionsDepartement, DataTableRowActionsUsers } from "./row-actions";
+import { DataTableRowActionsConge, DataTableRowActionsCongeEmploye, DataTableRowActionsDepartement, DataTableRowActionsUsers } from "./row-actions";
 import { Badge } from "../ui/badge";
 import { AllConge } from "@/types/Employe";
 import { format, parseISO } from "date-fns";
+import { Tag } from "antd";
 
 export const columnsUsers: ColumnDef<userType>[] = [
     {
@@ -196,16 +197,16 @@ export const columnsMyConge: ColumnDef<AllConge>[] = [
         header: ({ column }) => <DataTableColumnHeader column={column} title="Debut du Conge" />,
         cell: ({ row }) => {
             const dateDeb = parseISO(row.getValue("date_deb_cong"))
-            const formatteDate = format(dateDeb, "dd MMMM yyyy HH:mm:ss") 
+            const formatteDate = format(dateDeb, "dd MMMM yyyy HH:mm:ss")
             return (
-            <div className="flex space-x-2">
-                <span className="max-w-[500px] truncate font-medium">
-                    {formatteDate}
-                </span>
-            </div>
+                <div className="flex space-x-2">
+                    <span className="max-w-[500px] truncate font-medium">
+                        {formatteDate}
+                    </span>
+                </div>
             )
         },
-            enableSorting: false,
+        enableSorting: false,
         enableHiding: false,
     },
     {
@@ -213,13 +214,13 @@ export const columnsMyConge: ColumnDef<AllConge>[] = [
         header: ({ column }) => <DataTableColumnHeader column={column} title="Fin Conge" />,
         cell: ({ row }) => {
             const dateFin = parseISO(row.getValue("date_fin_cong"))
-            const formatteDate = format(dateFin, "dd MMMM yyyy HH:mm:ss") 
+            const formatteDate = format(dateFin, "dd MMMM yyyy HH:mm:ss")
             return (
-            <div className="flex space-x-2">
-                <span className="max-w-[500px] truncate font-medium">
-                    {formatteDate}
-                </span>
-            </div>
+                <div className="flex space-x-2">
+                    <span className="max-w-[500px] truncate font-medium">
+                        {formatteDate}
+                    </span>
+                </div>
             )
         },
     },
@@ -231,11 +232,8 @@ export const columnsMyConge: ColumnDef<AllConge>[] = [
     {
         accessorKey: "status_cong",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
-        cell: ({ row }) => <div>{row.getValue("status_cong")}</div>,
-    },
-    {
-        id: "actions",
-        cell: ({ row }) => <DataTableRowActionsConge row={row} />,
+        cell: ({ row }) => <Tag color={row.original.status_cong.includes("Refuser") ? "error" : row.original.status_cong.includes("Approuver") ? "success" : "processing"}>{row.getValue("status_cong")}</Tag>,
+
     },
 ]
 
@@ -269,37 +267,40 @@ export const columnsAllCongeEmploye: ColumnDef<AllConge>[] = [
         header: ({ column }) => <DataTableColumnHeader column={column} title="Debut du Conge" />,
         cell: ({ row }) => {
             const dateDeb = parseISO(row.getValue("date_deb_cong"))
-            const formatteDate = format(dateDeb, "dd MMMM yyyy HH:mm:ss") 
+            const formatteDate = format(dateDeb, "dd MMMM yyyy HH:mm:ss")
             return (
-            <div className="flex space-x-2">
-                <span className="max-w-[500px] truncate font-medium">
-                    {formatteDate}
-                </span>
-            </div>
+                <div className="flex space-x-2">
+                    <span className="max-w-[500px] truncate font-medium">
+                        {formatteDate}
+                    </span>
+                </div>
             )
         },
-            enableSorting: false,
-        enableHiding: false,
+
     },
     {
         accessorKey: "date_fin_cong",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Fin Conge" />,
         cell: ({ row }) => {
             const dateFin = parseISO(row.getValue("date_fin_cong"))
-            const formatteDate = format(dateFin, "dd MMMM yyyy HH:mm:ss") 
+            const formatteDate = format(dateFin, "dd MMMM yyyy HH:mm:ss")
             return (
-            <div className="flex space-x-2">
-                <span className="max-w-[500px] truncate font-medium">
-                    {formatteDate}
-                </span>
-            </div>
+                <div className="flex space-x-2">
+                    <span className="max-w-[500px] truncate font-medium">
+                        {formatteDate}
+                    </span>
+                </div>
             )
         },
+        enableSorting: false,
+        enableHiding: false,
     },
     {
         accessorKey: "motif_cong",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Motif" />,
         cell: ({ row }) => <div>{row.getValue("motif_cong")}</div>,
+        enableSorting: false,
+        enableHiding: false,
     },
     {
         accessorKey: "employe",
@@ -311,17 +312,20 @@ export const columnsAllCongeEmploye: ColumnDef<AllConge>[] = [
                     {employe ? employe?.nom_empl : "N/A"} {employe?.prenom_empl}
                 </div>
             );
-        }
+        },
+        enableSorting: false,
+        enableHiding: false,
     },
     {
         accessorKey: "status_cong",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
-        cell: ({ row }) => <div>{row.getValue("status_cong")}</div>,
+        cell: ({ row }) => <Tag color={row.original.status_cong.includes("Refuser") ? "error" : row.original.status_cong.includes("Approuver") ? "success" : "processing"}>{row.getValue("status_cong")}</Tag>,
+
     },
 
     {
         id: "actions",
-        cell: ({ row }) => <DataTableRowActionsConge row={row} />,
+        cell: ({ row }) => <DataTableRowActionsCongeEmploye row={row} />,
     },
 ]
 
@@ -355,16 +359,16 @@ export const columnsAllConge: ColumnDef<AllConge>[] = [
         header: ({ column }) => <DataTableColumnHeader column={column} title="Debut du Conge" />,
         cell: ({ row }) => {
             const dateDeb = parseISO(row.getValue("date_deb_cong"))
-            const formatteDate = format(dateDeb, "dd MMMM yyyy HH:mm:ss") 
+            const formatteDate = format(dateDeb, "dd MMMM yyyy HH:mm:ss")
             return (
-            <div className="flex space-x-2">
-                <span className="max-w-[500px] truncate font-medium">
-                    {formatteDate}
-                </span>
-            </div>
+                <div className="flex space-x-2">
+                    <span className="max-w-[500px] truncate font-medium">
+                        {formatteDate}
+                    </span>
+                </div>
             )
         },
-            enableSorting: false,
+        enableSorting: false,
         enableHiding: false,
     },
     {
@@ -372,13 +376,13 @@ export const columnsAllConge: ColumnDef<AllConge>[] = [
         header: ({ column }) => <DataTableColumnHeader column={column} title="Fin Conge" />,
         cell: ({ row }) => {
             const dateFin = parseISO(row.getValue("date_fin_cong"))
-            const formatteDate = format(dateFin, "dd MMMM yyyy HH:mm:ss") 
+            const formatteDate = format(dateFin, "dd MMMM yyyy HH:mm:ss")
             return (
-            <div className="flex space-x-2">
-                <span className="max-w-[500px] truncate font-medium">
-                    {formatteDate}
-                </span>
-            </div>
+                <div className="flex space-x-2">
+                    <span className="max-w-[500px] truncate font-medium">
+                        {formatteDate}
+                    </span>
+                </div>
             )
         },
     },
