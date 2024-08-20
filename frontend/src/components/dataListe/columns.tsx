@@ -110,30 +110,6 @@ export const columnsUsers: ColumnDef<userType>[] = [
 
 export const columnsDepartements: ColumnDef<departementType>[] = [
     {
-        id: "select",
-        header: ({ table }) => (
-            <Checkbox
-                checked={
-                    table.getIsAllPageRowsSelected() ||
-                    (table.getIsSomePageRowsSelected() && "indeterminate")
-                }
-                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label="Select all"
-                className="translate-y-[2px]"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-                className="translate-y-[2px]"
-            />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-    },
-    {
         accessorKey: "code_dep",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Code departement" />,
         cell: ({ row }) => <div className="w-[80px]">{row.getValue("code_dep")}</div>,
@@ -151,7 +127,7 @@ export const columnsDepartements: ColumnDef<departementType>[] = [
     },
     {
         accessorKey: "chef_dep",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Chef Identifiant" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Chef Departement" />,
         cell: ({ row }) => {
             const chefDep = row.getValue("chef_dep") as userWithoutDepartementType;
             return (
@@ -168,30 +144,6 @@ export const columnsDepartements: ColumnDef<departementType>[] = [
 ]
 
 export const columnsMyConge: ColumnDef<AllConge>[] = [
-    {
-        id: "select",
-        header: ({ table }) => (
-            <Checkbox
-                checked={
-                    table.getIsAllPageRowsSelected() ||
-                    (table.getIsSomePageRowsSelected() && "indeterminate")
-                }
-                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label="Select all"
-                className="translate-y-[2px]"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-                className="translate-y-[2px]"
-            />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-    },
     {
         accessorKey: "date_deb_cong",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Debut du Conge" />,
@@ -238,30 +190,6 @@ export const columnsMyConge: ColumnDef<AllConge>[] = [
 ]
 
 export const columnsAllCongeEmploye: ColumnDef<AllConge>[] = [
-    {
-        id: "select",
-        header: ({ table }) => (
-            <Checkbox
-                checked={
-                    table.getIsAllPageRowsSelected() ||
-                    (table.getIsSomePageRowsSelected() && "indeterminate")
-                }
-                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label="Select all"
-                className="translate-y-[2px]"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-                className="translate-y-[2px]"
-            />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-    },
     {
         accessorKey: "date_deb_cong",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Debut du Conge" />,
@@ -330,30 +258,6 @@ export const columnsAllCongeEmploye: ColumnDef<AllConge>[] = [
 ]
 
 export const columnsAllConge: ColumnDef<AllConge>[] = [
-    {
-        id: "select",
-        header: ({ table }) => (
-            <Checkbox
-                checked={
-                    table.getIsAllPageRowsSelected() ||
-                    (table.getIsSomePageRowsSelected() && "indeterminate")
-                }
-                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label="Select all"
-                className="translate-y-[2px]"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-                className="translate-y-[2px]"
-            />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-    },
     {
         accessorKey: "date_deb_cong",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Debut du Conge" />,

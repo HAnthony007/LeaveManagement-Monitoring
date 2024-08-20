@@ -29,6 +29,7 @@ export const useLogin = () => {
             return res.data;
         } catch (error) {
             console.error(error);
+            toast.error("Quelque chose ne va pas avec le serveur pour le Login");
             throw error;
         }
     }
@@ -49,6 +50,7 @@ export const useRegister = () => {
             return res.data;
         } catch (error) {
             console.error("An error occurred during registration: ", error);
+            toast.error("Quelque chose ne va pas avec le serveur pour le Register.");
             throw error;
         }
     };

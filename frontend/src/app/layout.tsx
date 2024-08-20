@@ -31,7 +31,7 @@ export default function RootLayout({
 
         >
           <Toaster richColors closeButton position="top-left" />
-          <ToasterShadcn  />
+          <ToasterShadcn />
           {/* Headers */}
           <>
             <NavBarWrapper />

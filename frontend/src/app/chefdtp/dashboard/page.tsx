@@ -3,19 +3,39 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+import { ToastAction } from "@/components/ui/toast";
+import { toast as ToastShadcn } from "@/components/ui/use-toast";
+import { useMyProfile } from "@/hooks/useEmploye";
 import { useAuthStore } from "@/stores/AuthStore";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function DashboardPage() {
-  const { user } = useAuthStore();
+  const { myProfile, error } = useMyProfile();
 
-  console.log("Voici Hello RH: ")
-  console.log(user);
+  const router = useRouter();
+  const logout = useAuthStore((state) => state.logout);
+  const handleLogout = () => {
+    toast.success("Deconnexion reussie");
+    logout();
+    router.push('/authentification');
+    // window.location.reload();
+  }
+
+  if (error) {
+    ToastShadcn({
+      variant: "destructive",
+      title: "Uh oh! Quelque chose ne va pas.",
+      description: "Impossible de recuperer votre information.",
+      action: <ToastAction onClick={handleLogout} altText="Reconnecter">Reconnecter</ToastAction>,
+    })
+  }
 
   return (
     <>
-      <h1>Hello RH {user?.email_empl}</h1>
+      <h1>Hello {myProfile?.email_empl}</h1>
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
         <Card x-chunk="dashboard-01-chunk-0">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

@@ -151,16 +151,6 @@ export function DataTableRowActionsDepartement({
     return (
         <div className="relative flex items-center gap-2">
             <TooltipProvider >
-                <Tooltip >
-                    <TooltipTrigger>
-                        <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                            <ViewEyeIcon />
-                        </span>
-                    </TooltipTrigger>
-                    <TooltipContent >
-                        Details
-                    </TooltipContent>
-                </Tooltip>
 
                 <Tooltip>
                     <TooltipTrigger >

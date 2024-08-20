@@ -2,7 +2,6 @@ use std::error::Error;
 
 use actix_web::web;
 use chrono::{Datelike, Utc};
-use job_scheduler::Job;
 use num_traits::FromPrimitive;
 use rust_decimal::Decimal;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder, ActiveModelTrait, Set};
@@ -68,17 +67,4 @@ pub async fn soldes_employe (
     }
 
     Ok(())
-}
-
-pub fn create_solde_cron(
-    app_state: &web::Data<AppState>
-) -> Job {
-    Job::new("*/5 * * * * *".parse().unwrap(), move || {
-        let app_state = app_state.clone();
-        tokio::spawn(async move {
-            if let Err(err) = soldes_employe(&app_state).await {
-                println!("Error lors de l'ajout cron solde{}", err);
-            }
-        });
-    })
 }

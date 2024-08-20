@@ -18,7 +18,7 @@ import {
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DataTablePagination } from "./table-pagination"
-import { DataTableToolbarDepartement, DataTableToolbarRh, DataTableToolbarUsers } from "./toolbar"
+import { DataTableToolbarConge, DataTableToolbarDepartement, DataTableToolbarRh, DataTableToolbarUsers } from "./toolbar"
 import { usePathname } from "next/navigation"
 
 interface DataTableProps<TData, TValue> {
@@ -64,7 +64,7 @@ export function DataTable<TData, TValue>({
     return (
         <div className="space-y-4">
             {
-                pathname === '/admin/users' ? <DataTableToolbarUsers table={table} /> : <DataTableToolbarRh table={table}/>
+                pathname.includes("/departement") ? <DataTableToolbarDepartement table={table} /> : (pathname.includes("users") || pathname.includes("Employe") ) ? <DataTableToolbarUsers table={table}/> : <DataTableToolbarConge table={table} />
             }
             <div className="rounded-md border">
                 <Table>
