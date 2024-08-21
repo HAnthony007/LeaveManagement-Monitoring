@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use actix_web::{get, post, put, web};
-use chrono::{DateTime, Duration, Local, TimeZone, Utc};
+use chrono::{DateTime, Duration, Local, NaiveDateTime, TimeZone, Utc};
 use num_traits::cast::ToPrimitive;
 use sea_orm::{prelude::Decimal, ActiveModelTrait, ColumnTrait, EntityTrait, IntoActiveModel, QueryFilter, QueryOrder, Set};
 use serde::{Deserialize, Serialize};
@@ -25,6 +25,18 @@ pub struct CongeWithEmploye {
     pub date_trait_cong: Option<chrono::DateTime<chrono::Local>>,
     pub employe: Option<UserInfo>,
     pub departement: Option<DepartementInfo>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CongePlanning {
+    pub id_cong: String,
+    pub date_dmd_cong: chrono::NaiveDateTime,
+    pub motif_cong: String,
+    pub date_deb_cong: chrono::NaiveDateTime,
+    pub date_fin_cong: chrono::NaiveDateTime,
+    pub nb_jour_cong: Decimal,
+    pub status_cong: String,
+    pub date_trait_cong: Option<NaiveDateTime>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

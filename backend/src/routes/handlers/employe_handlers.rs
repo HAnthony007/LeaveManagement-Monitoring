@@ -6,6 +6,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::utils::{api_response::ApiResponse, app_state, jwt::Claims};
 
+use super::conge_handlers::CongePlanning;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserWithDep {
     pub id_empl: String,
@@ -30,6 +32,19 @@ pub struct UserWithDepSolde {
     pub solde: Option<SoldeData>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PlanningConge {
+    pub id_empl: String,
+    pub n_matricule: String,
+    pub nom_empl: String,
+    pub prenom_empl: Option<String>,
+    pub email_empl: String,
+    pub role: String,
+    pub status: String,
+    pub departement: Option<DepartementData>,
+    pub solde: Option<SoldeData>,
+    pub conge: Vec<CongePlanning>
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserInfo {
@@ -456,6 +471,133 @@ pub async fn all_my_employe(
         Some(employee_models),
     ))
 }
+
+
+#[get("/all_my_employe_planning")]
+pub async fn all_my_employe_planning(
+    app_state: web::Data<app_state::AppState>,
+    claims: Claims,
+) -> Result<ApiResponse<Vec<PlanningConge>>, ApiResponse<()>> {
+
+    let chef_departement = entity::departement::Entity::find()
+        .filter(entity::departement::Column::ChefDep.eq(claims.id.clone()))
+        .one(&app_state.db)
+        .await
+        .map_err(|err| {
+            println!("{:?}", err);
+            ApiResponse::new(500, false, "Server Error".to_string(), None)
+        })?;
+
+    let chef_departement_id = match chef_departement {
+        Some(dept) => dept.id_dep,
+        None => {
+            return Ok(ApiResponse::new(
+                200,
+                true,
+                "No Department Found".to_string(),
+                Some(vec![]),
+            ));
+        }
+    };
+
+    let employees = entity::employe::Entity::find()
+        .filter(entity::employe::Column::IdDep.eq(chef_departement_id))
+        .filter(entity::employe::Column::IdEmpl.ne(claims.id))
+        .filter(entity::employe::Column::Role.eq("employe"))
+        .all(&app_state.db)
+        .await
+        .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
+
+    let employee_models = futures::future::join_all(employees.into_iter().map(|employee| {
+        let app_state = app_state.clone();
+        async move {
+            let departement = entity::departement::Entity::find_by_id(employee.id_dep)
+                .one(&app_state.db)
+                .await
+                .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
+            let chef_dep = match &departement {
+                Some(dep) => {
+                    entity::employe::Entity::find_by_id(dep.chef_dep.clone().unwrap_or_default())
+                        .one(&app_state.db)
+                        .await
+                        .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?
+                }
+                None => None,
+            };
+
+            let solde = entity::solde::Entity::find()
+                .filter(entity::solde::Column::IdEmpl.eq(employee.id_empl.clone()))
+                .order_by_desc(entity::solde::Column::AnneeSld)
+                .order_by_desc(entity::solde::Column::MoisSld)
+                .one(&app_state.db)
+                .await
+                .map_err(|e| ApiResponse::new(500, false, e.to_string(), None))?;
+
+            let conges = entity::conge::Entity::find()
+                .filter(entity::conge::Column::IdEmpl.eq(employee.id_empl.clone()))
+                .all(&app_state.db)
+                .await
+                .map_err(|e| ApiResponse::new(
+                    500,
+                    false,
+                    e.to_string(),
+                    None,
+                ))?;
+            
+            let conge_planning: Vec<CongePlanning> = conges.into_iter().map(|conge| CongePlanning {
+                id_cong: conge.id_cong,
+                motif_cong: conge.motif_cong,
+                date_dmd_cong: conge.date_dmd_cong,
+                date_deb_cong: conge.date_deb_cong,
+                    date_fin_cong: conge.date_fin_cong,
+                    nb_jour_cong: conge.nb_jour_cong,
+                    status_cong: conge.status_cong,
+                    date_trait_cong: conge.date_trait_cong
+            }).collect();
+
+            Ok(PlanningConge {
+                id_empl: employee.id_empl,
+                n_matricule: employee.n_matricule,
+                nom_empl: employee.nom_empl,
+                prenom_empl: employee.prenom_empl,
+                email_empl: employee.email_empl,
+                role: employee.role,
+                status: employee.status,
+                departement: departement.map(|dep| DepartementData {
+                    code_dep: dep.code_dep,
+                    nom_dep: dep.nom_dep,
+                    chef_dep: chef_dep.map(|chef| UserInfo {
+                        n_matricule: chef.n_matricule,
+                        id_dep: chef.id_dep,
+                        nom_empl: chef.nom_empl,
+                        prenom_empl: chef.prenom_empl,
+                        email_empl: chef.email_empl,
+                        role: chef.role,
+                    }),
+                }),
+                solde: solde.map(|sld| SoldeData {
+                    j_aqui_sld: sld.j_aqui_sld,
+                    j_pris_sld: sld.j_pris_sld,
+                    j_reste_sld: sld.j_reste_sld,
+                    mois_sld: sld.mois_sld,
+                    annee_sld: sld.annee_sld
+                }),
+                conge: conge_planning,
+            })
+        }
+    }))
+    .await
+    .into_iter()
+    .collect::<Result<Vec<_>, _>>()?;
+
+    Ok(ApiResponse::new(
+        200,
+        true,
+        "All employees fetched successfully".to_string(),
+        Some(employee_models),
+    ))
+}
+
 
 #[post("/update_employe/{id_empl}")]
 pub async fn update_employe(

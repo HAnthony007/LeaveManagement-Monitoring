@@ -13,6 +13,7 @@ pub fn config(config: &mut web::ServiceConfig) {
             .service(handlers::employe_handlers::all_employe)
             .service(handlers::employe_handlers::all_user)
             .service(handlers::employe_handlers::all_my_employe)
+            .service(handlers::employe_handlers::all_my_employe_planning)
         )
         .service(web::scope("/employe")
         );

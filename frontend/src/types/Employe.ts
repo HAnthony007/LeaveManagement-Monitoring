@@ -15,6 +15,34 @@ export type User = {
 }
 
 
+export type PlanningUser = {
+    id_empl: string;
+    n_matricule: string;
+    id_dep: string;
+    id_suphier: string | null;
+    nom_empl: string;
+    prenom_empl: string;
+    email_empl: string;
+    passw_empl: string;
+    role: UserRole;
+    status: string;
+    departement: DepartementUserInfo;
+    solde: SoldeData,
+    conge: AllCongePlanning[]
+}
+
+
+export type AllCongePlanning = {
+    id_cong: string;
+    date_dmd_cong: Date;
+    motif_cong: string;
+    date_deb_cong: string;
+    date_fin_cong: string;
+    nb_jour_cong: string;
+    status_cong: string;
+    date_trait_cong: Date | null;
+}
+
 export type UserWithoutDepartement = {
     n_matricule: string;
     id_dep: string;
