@@ -2,9 +2,11 @@ use std::{error::Error, fmt::Display, time::Duration};
 
 use actix_cors::Cors;
 use actix_web::{middleware::Logger, web, App, HttpServer};
+use chrono::Datelike;
 use migration::{Migrator, MigratorTrait};
-use sea_orm::{Database, DatabaseConnection};
-use utils::{app_state::AppState, solde_cron::soldes_employe};
+use sea_orm::{ColumnTrait, Database, DatabaseConnection, EntityTrait, QueryFilter, Set, ActiveModelTrait };
+use sha256::digest;
+use utils::{app_state::AppState, random::generate_random_id, solde_cron::soldes_employe};
 
 use tokio::time::sleep;
 use tokio_cron_scheduler::{ Job, JobScheduler };
@@ -57,14 +59,71 @@ async fn main() -> Result<(), MainError> {
                 message: err.to_string(),
             })?;
 
-    // Mise à jour BD
-    Migrator::up(&db, None).await.map_err(|err| MainError {
-        message: err.to_string(),
-    })?;
+    // // Mise à jour BD
+    // Migrator::up(&db, None).await.map_err(|err| MainError {
+    //     message: err.to_string(),
+    // })?;
+    
+    // Reinitialise la base de donne
+    Migrator::fresh(&db)
+        .await
+        .map_err(|err| MainError {
+            message: err.to_string(),
+        })?;
 
     let app_state = web::Data::new(AppState { db: db.clone() });
 
     let app_state_clone = app_state.clone();
+
+    let departement_superieur = entity::departement::Entity::find()
+        .filter(entity::departement::Column::CodeDep.eq("000"))
+        .one(&app_state.db)
+        .await
+        .unwrap_or(None);
+
+    let departement_superieur = if let Some(dep) = departement_superieur {
+        dep
+    } else { 
+        let dep_model = entity::departement::ActiveModel {
+            id_dep: Set(generate_random_id("000")),
+            code_dep: Set("000".to_string()),
+            nom_dep: Set("Superieur".to_string()),
+            ..Default::default()
+        };
+        dep_model.insert(&app_state.db).await.unwrap()
+    };
+
+    let admin_existe = entity::employe::Entity::find()
+        .filter(entity::employe::Column::NMatricule.eq("000"))
+        .one(&app_state.db)
+        .await
+        .unwrap_or(None)
+        .is_some();
+
+    if !admin_existe {
+        let id_empl = generate_random_id("000");
+        let user_model = entity::employe::ActiveModel {
+            id_empl: Set(id_empl.clone()),
+            n_matricule: Set("000".to_string()),
+            id_dep: Set(departement_superieur.id_dep),
+            nom_empl: Set("Admin".to_string()),
+            prenom_empl: Set(Some("admin".to_string())),
+            email_empl: Set("admin@gmail.com".to_string()),
+            passw_empl: Set(digest("admin@123")),
+            role: Set("admin".to_string()),
+            ..Default::default()
+        };
+        user_model.insert(&app_state.db).await.unwrap();
+        
+        let solde_model = entity::solde::ActiveModel {
+            id_sld: Set(generate_random_id("000")),
+            id_empl: Set(id_empl.clone()),
+            mois_sld: Set(chrono::Local::now().month() as i32),
+            annee_sld: Set(chrono::Local::now().year() as i32),
+            ..Default::default()
+        };
+        solde_model.insert(&app_state.db).await.unwrap();
+    }
 
     let shed = JobScheduler::new().await.unwrap();
 

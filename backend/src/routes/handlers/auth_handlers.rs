@@ -201,7 +201,7 @@ pub async fn login(
             None
         ))?
         .ok_or(ApiResponse::new(
-            404,
+            200,
             false,
             "User Not found".to_owned(),
             None
