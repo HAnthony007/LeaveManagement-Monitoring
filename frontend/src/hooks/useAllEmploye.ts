@@ -119,3 +119,31 @@ export function useAllMyEmployePlanning() {
         updateMyEmployeData
     }
 }
+
+export function useAllEmployePlanning() {
+    const { data: Employes, error, isLoading } = useSWR<ApiResponse<PlanningUser[]>>(`${apiUrl}/employe/secure/all_employe_planning`,
+        fetcher,
+        {
+            onError: (error) => {
+                console.error("An error occurred during fetch", error)
+                toast.error("Une erreur est survenue lors de la sélection des employés")
+            },
+        },
+    );
+
+    const updateEmployeData = async () => {
+        try {
+            await mutate(`${apiUrl}/employe/secure/all_employe_planning`);
+        } catch (error) {
+            console.error("Error updating user data", error);
+            toast.error("Unse erreur est survenue lors de la mise a jour de donne des employes");
+        }
+    }
+
+    return {
+        myEmployes: Employes?.data || [],
+        isLoading,
+        error: error?.message || null,
+        updateEmployeData
+    }
+}

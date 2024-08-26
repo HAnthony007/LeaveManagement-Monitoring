@@ -189,7 +189,7 @@ export function DataTableRowActionsDepartement({
                                             <Button variant={"destructive"}
                                                 onClick={handleDeleteDepartement}
                                             >
-                                                Yes, delete user
+                                                Yes, delete departement
                                             </Button>
                                         </AlertDialogAction>
 

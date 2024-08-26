@@ -1,10 +1,9 @@
 "use client";
 import { SchedulerPlaning } from "@/components/Scheduler";
 import { useAllMyEmployePlanning } from "@/hooks/useAllEmploye";
-import { useAllMyEmployeConge } from "@/hooks/useConge";
 import { SchedulerData } from "@bitnoi.se/react-scheduler";
 
-export default function PricingPage() {
+export default function PlanningPage() {
   const { myEmployes } = useAllMyEmployePlanning();
 
   const congeEmploye: SchedulerData = myEmployes.map((employe) => ({
@@ -28,7 +27,7 @@ export default function PricingPage() {
   console.log(congeEmploye)
   return (
     <div>
-      <h1  >Pricing</h1>
+      <h1  >Planning</h1>
       <div className="relative w-full h-[700px]">
 
       <SchedulerPlaning conge={congeEmploye}/>

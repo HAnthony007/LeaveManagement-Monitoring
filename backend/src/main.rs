@@ -59,17 +59,17 @@ async fn main() -> Result<(), MainError> {
                 message: err.to_string(),
             })?;
 
-    // // Mise à jour BD
-    // Migrator::up(&db, None).await.map_err(|err| MainError {
-    //     message: err.to_string(),
-    // })?;
+    // Mise à jour BD
+    Migrator::up(&db, None).await.map_err(|err| MainError {
+        message: err.to_string(),
+    })?;
     
-    // Reinitialise la base de donne
-    Migrator::fresh(&db)
-        .await
-        .map_err(|err| MainError {
-            message: err.to_string(),
-        })?;
+    // // Reinitialise la base de donne
+    // Migrator::fresh(&db)
+    //     .await
+    //     .map_err(|err| MainError {
+    //         message: err.to_string(),
+    //     })?;
 
     let app_state = web::Data::new(AppState { db: db.clone() });
 
@@ -176,80 +176,3 @@ async fn main() -> Result<(), MainError> {
         message: err.to_string(),
     })
 }
-
-// #[actix_web::main]
-// async fn main() -> Result<(), MainError> {
-//     if std::env::var_os("RUST_LOG").is_none() {
-//         std::env::set_var("RUST_LOG", "actix_web=info");
-//     }
-
-//     dotenv::dotenv().ok();
-//     env_logger::init();
-
-//     let port = (utils::constants::PORT).clone();
-//     let address = (utils::constants::ADDRESS).clone();
-//     let database_url = (utils::constants::DATABASE_URL).clone();
-
-//     let db: DatabaseConnection =
-//         Database::connect(database_url)
-//             .await
-//             .map_err(|err| MainError {
-//                 message: err.to_string(),
-//             })?;
-
-//     // Mise a jour BD
-//     Migrator::up(&db, None).await.map_err(|err| MainError {
-//         message: err.to_string(),
-//     })?;
-
-//     // // Reinitialise la base de donne
-//     // Migrator::fresh(&db)
-//     //     .await
-//     //     .map_err(|err| MainError {
-//     //         message: err.to_string(),
-//     //     })?;
-
-//     let app_state = web::Data::new(AppState { db: db.clone() });
-
-//     let sched = JobScheduler::new();
-
-//     let job = Job::new_async("0 0 1 * * *", move |_uuid, _l| {
-//         let app_state = app_state.clone();
-//         Box::pin(async move {
-//             match soldes_employe(&app_state).await {
-//                 Ok(_) => println!("Solde employe increment successfully"),
-//                 Err(e) => eprintln!("Erreur lors de l'incrementation du solde: {}", e),
-//             }
-//         })
-//     })
-//     .unwarap();
-
-//     sched.add(job).unwrap();
-
-//     HttpServer::new(move || {
-//         App::new()
-//             .app_data(web::Data::new(AppState { db: db.clone() }))
-//             .wrap(Logger::default())
-//             .wrap(
-//                 Cors::default()
-//                     .allow_any_origin()
-//                     .allow_any_method()
-//                     .allow_any_header()
-//                     .supports_credentials(),
-//             )
-//             .configure(routes::test_routes::config)
-//             .configure(routes::auth_routes::config)
-//             .configure(routes::employe_routes::config)
-//             .configure(routes::admin_routes::config)
-//             .configure(routes::conge_routes::config)
-//     })
-//     .bind((address, port))
-//     .map_err(|err| MainError {
-//         message: err.to_string(),
-//     })?
-//     .run()
-//     .await
-//     .map_err(|err| MainError {
-//         message: err.to_string(),
-//     })
-// }

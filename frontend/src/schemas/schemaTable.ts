@@ -62,7 +62,7 @@ export const userSchema = z.object({
 
 export const userRegister = z.object({
     n_matricule: z.string().min(2, "Matricule must be at least 2 characters"),
-    id_dep: z.string(),
+    id_dep: z.string().min(1, "Departement required"),
     nom_empl: z.string().min(1, "Nom required"),
     prenom_empl: z.string(),
     email_empl: z.string().email("Email must be valid"),

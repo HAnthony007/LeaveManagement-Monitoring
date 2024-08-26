@@ -14,6 +14,7 @@ import { useRegister } from "@/hooks/useAuth"
 import { toast as toastSonner } from 'sonner';
 import { EditIcon } from "./icon/iconApp"
 import { useUpdateUser } from "@/hooks/useEmploye"
+import { useAllUsers } from "@/hooks/useAllEmploye"
 
 type thisUserProps = {
     user: userType;
@@ -23,6 +24,7 @@ export const EditUser = ({ user }: thisUserProps) => {
 
     const { departements } = useAllDepartement();
     const { updateUser } = useUpdateUser();
+    const { updateUserData } = useAllUsers();
     console.log("Departement:")
 
     const form = useForm<userWithoutDepartementType>({
@@ -49,6 +51,7 @@ export const EditUser = ({ user }: thisUserProps) => {
         try {
             await updateUser(user.id_empl, data);
             form.reset();
+            updateUserData();
         } catch (error) {
             console.error("Erreur lors de l'enregistrement")
             toast({
@@ -131,6 +134,7 @@ export const EditUser = ({ user }: thisUserProps) => {
                                             </FormControl>
                                             <SelectContent>
                                                 <SelectItem value="employe">Employe</SelectItem>
+                                                <SelectItem value="chefdtp">Chef de Departement</SelectItem>
                                                 <SelectItem value="rh">Resource humaine</SelectItem>
                                                 <SelectItem value="admin">Administrateur</SelectItem>
                                             </SelectContent>

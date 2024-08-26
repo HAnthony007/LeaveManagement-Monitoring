@@ -46,6 +46,10 @@ export function AddConge() {
         endDate: null
     })
 
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+
     const handleDateChange = (newValue: any | null) => {
         setDateValue(newValue)
         if (newValue && newValue.startDate) {
@@ -131,7 +135,7 @@ export function AddConge() {
                                             value={dateValue}
                                             onChange={handleDateChange}
                                             showShortcuts
-                                        
+                                            minDate={tomorrow}
                                         />
                                     </FormControl>
                                     <FormMessage />

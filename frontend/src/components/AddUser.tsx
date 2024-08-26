@@ -140,7 +140,7 @@ export const AddUser = ({ user }: addUserProps) => {
                                             </FormControl>
                                             <SelectContent>
                                                 <SelectItem value="employe">Employe</SelectItem>
-                                                <SelectItem value="chefDTP">Chef de Departement</SelectItem>
+                                                <SelectItem value="chefdtp">Chef de Departement</SelectItem>
                                                 <SelectItem value="rh">Resource humaine</SelectItem>
                                                 <SelectItem value="admin">Administrateur</SelectItem>
                                             </SelectContent>
