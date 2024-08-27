@@ -3,6 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ToastAction } from "@/components/ui/toast";
 import { toast as ToastShadcn } from "@/components/ui/use-toast";
 import { useAllMyEmployes } from "@/hooks/useAllEmploye";
+import { useAllMyEmployeConge } from "@/hooks/useConge";
 import { useMyProfile } from "@/hooks/useEmploye";
 import { useAuthStore } from "@/stores/AuthStore";
 import { useRouter } from "next/navigation";
@@ -12,6 +13,7 @@ export default function DashboardPage() {
   const { myProfile, error } = useMyProfile();
 
   const { myEmployes } = useAllMyEmployes()
+  const { myEmployeConge } = useAllMyEmployeConge()
 
   const router = useRouter();
   const logout = useAuthStore((state) => state.logout);
@@ -21,6 +23,10 @@ export default function DashboardPage() {
     router.push('/authentification');
     // window.location.reload();
   }
+
+  const congeEmployeApprouver = myEmployeConge.filter((conge) => conge.status_cong.includes("Approuver")).length
+  const congeEmployeRefuser = myEmployeConge.filter((conge) => conge.status_cong.includes("Refuser")).length
+  const congeEmployeAttente = myEmployeConge.filter((conge) => conge.status_cong.includes("DTP")).length
 
   if (error) {
     ToastShadcn({
@@ -42,6 +48,21 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+{myEmployes.length}</div>
+<p className="text-xs text-muted-foreground">
+            Total mon Employe
+            </p>
+          </CardContent>
+        </Card>
+        <Card x-chunk="dashboard-01-chunk-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Mon Solde</CardTitle>
+            {/* <CreditCard className="h-4 w-4 text-muted-foreground" /> */}
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">+{myProfile?.solde.j_reste_sld}</div>
+            <p className="text-xs text-muted-foreground">
+              Mon Solde de Conge
+            </p>
           </CardContent>
         </Card>
         <Card x-chunk="dashboard-01-chunk-1">
@@ -52,30 +73,33 @@ export default function DashboardPage() {
             {/* <Users className="h-4 w-4 text-muted-foreground" /> */}
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+2350</div>
+            <div className="text-2xl font-bold">+{congeEmployeAttente}</div>
+            <p className="text-xs text-muted-foreground">
+              total Conge employe en attente 
+            </p>
           </CardContent>
         </Card>
         <Card x-chunk="dashboard-01-chunk-2">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sales</CardTitle>
+            <CardTitle className="text-sm font-medium">Conge Refuser</CardTitle>
             {/* <CreditCard className="h-4 w-4 text-muted-foreground" /> */}
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+12,234</div>
+            <div className="text-2xl font-bold">+{congeEmployeRefuser}</div>
             <p className="text-xs text-muted-foreground">
-              +19% from last month
+              total Conge employe refuser
             </p>
           </CardContent>
         </Card>
         <Card x-chunk="dashboard-01-chunk-3">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Now</CardTitle>
+            <CardTitle className="text-sm font-medium">Conge Approuver</CardTitle>
             {/* <Activity className="h-4 w-4 text-muted-foreground" /> */}
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+573</div>
+            <div className="text-2xl font-bold">+{congeEmployeApprouver}</div>
             <p className="text-xs text-muted-foreground">
-              +201 since last hour
+            Total conge approuver
             </p>
           </CardContent>
         </Card>
