@@ -12,7 +12,7 @@ use crate::utils::{
 
 #[derive(Serialize, Deserialize)]
 struct LoginModel {
-    email_empl: String,
+    n_matricule: String,
     passw_empl: String,
 }
 
@@ -189,7 +189,7 @@ pub async fn login(
     let employe_data = entity::employe::Entity::find()
         .filter(
             Condition::all()
-                .add(entity::employe::Column::EmailEmpl.eq(login_json.email_empl.clone()))
+                .add(entity::employe::Column::NMatricule.eq(login_json.n_matricule.clone()))
                 .add(entity::employe::Column::PasswEmpl.eq(digest(&login_json.passw_empl))),
         )
         .one(&app_state.db)
