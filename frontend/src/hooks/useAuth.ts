@@ -12,9 +12,9 @@ export const useLogin = () => {
     const setToken = useAuthStore((state) => state.setToken);
     const setUser = useAuthStore((state) => state.setUser);
 
-    const login = async (email_empl: string, passw_empl: string) => {
+    const login = async (n_matricule: string, passw_empl: string) => {
         try {
-            const res = await axiosInstance.post('/auth/login', { email_empl, passw_empl });
+            const res = await axiosInstance.post('/auth/login', { n_matricule, passw_empl });
 
             if (!res.data.success) return toast.error(res.data.message);
             const { user, token } = res.data.data;

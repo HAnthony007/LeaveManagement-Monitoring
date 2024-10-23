@@ -6,7 +6,8 @@ export default function AboutLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="d-flex justify-center items-center h-full w-screen">
+        // <div className="d-flex justify-center items-center h-full w-screen">
+        <div className="m-auto ">
             {children}
         </div>
     );

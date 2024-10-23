@@ -37,7 +37,7 @@ export function DataTableToolbarUsers<TData>({
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
                 <Input
-                    placeholder="Filter tasks..."
+                    placeholder="Filtré par Nom..."
                     value={(table.getColumn("nom_empl")?.getFilterValue() as string) ?? ""}
                     onChange={(event) => {
                         table.getColumn("nom_empl")?.setFilterValue(event.target.value)
@@ -58,7 +58,7 @@ export function DataTableToolbarUsers<TData>({
                         onClick={() => table.resetColumnFilters()}
                         className="h-8 px-2 lg:px-3"
                     >
-                        Reset
+                        Réinitialiser
                         <Cross2Icon className="ml-2 h-4 w-4" />
                     </Button>
                 )}
@@ -90,7 +90,7 @@ export function DataTableToolbarConge<TData>({
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
                 <Input
-                    placeholder="Filter tasks..."
+                    placeholder="Filtré par motif..."
                     value={(table.getColumn("motif_cong")?.getFilterValue() as string) ?? ""}
                     onChange={(event) => {
                         table.getColumn("motif_cong")?.setFilterValue(event.target.value)
@@ -104,7 +104,7 @@ export function DataTableToolbarConge<TData>({
                         onClick={() => table.resetColumnFilters()}
                         className="h-8 px-2 lg:px-3"
                     >
-                        Reset
+                        Réinitialiser
                         <Cross2Icon className="ml-2 h-4 w-4" />
                     </Button>
                 )}
@@ -135,7 +135,7 @@ export function DataTableToolbarDepartement<TData>({
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
                 <Input
-                    placeholder="Filter tasks..."
+                    placeholder="Filtré par nom département..."
                     value={(table.getColumn("nom_dep")?.getFilterValue() as string) ?? ""}
                     onChange={(event) => {
                         table.getColumn("nom_dep")?.setFilterValue(event.target.value)
@@ -149,7 +149,7 @@ export function DataTableToolbarDepartement<TData>({
                         onClick={() => table.resetColumnFilters()}
                         className="h-8 px-2 lg:px-3"
                     >
-                        Reset
+                        Réinitialiser
                         <Cross2Icon className="ml-2 h-4 w-4" />
                     </Button>
                 )}
@@ -182,7 +182,7 @@ export function DataTableToolbarRh<TData>({
         <div className="flex items-center justify-between">
             <div className="flex flex-1 items-center space-x-2">
                 <Input
-                    placeholder="Filter tasks..."
+                    placeholder="Filtré par nom..."
                     value={(table.getColumn("nom_empl")?.getFilterValue() as string) ?? ""}
                     onChange={(event) => {
                         table.getColumn("nom_empl")?.setFilterValue(event.target.value)
@@ -203,7 +203,7 @@ export function DataTableToolbarRh<TData>({
                         onClick={() => table.resetColumnFilters()}
                         className="h-8 px-2 lg:px-3"
                     >
-                        Reset
+                        Réinitialiser
                         <Cross2Icon className="ml-2 h-4 w-4" />
                     </Button>
                 )}

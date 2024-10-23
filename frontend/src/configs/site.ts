@@ -100,30 +100,30 @@ export const siteConfig = {
 
     navRH: [
         {
-            label: "Dashboard",
+            label: "Tableau de bord",
             href: "/rh/dashboard",
         },
         {
-            label: "Users",
+            label: "Utilisateurs",
             href: "/rh/users",
         },
         {
-            label: "ListeConge",
+            label: "Liste_Congé",
             href: "/rh/listeConge",
         },
         {
-            label: "Planing",
+            label: "Planification",
             href: "/rh/planing",
         },
     ],
 
     navEmploye: [
         {
-            label: "Dashboard",
+            label: "Tableau de bord",
             href: "/employe/dashboard",
         },
         {
-            label: "MonConge",
+            label: "Mon Conge",
             href: "/employe/monConge",
         },
         {
@@ -134,43 +134,43 @@ export const siteConfig = {
 
     navAdmin: [
         {
-            label: "Dashboard",
+            label: "Table de bord",
             href: "/admin/dashboard",
         },
         {
-            label: "Users",
+            label: "Utilisateurs",
             href: "/admin/users",
         },
         {
-            label: "Departement",
+            label: "Département",
             href: "/admin/departement",
         },
     ],
 
     navChefDTP: [
         {
-            label: "Dashboard",
+            label: "Tableau de bord",
             href: "/chefdtp/dashboard",
         },
         {
-            label: "MonConge",
+            label: "Mon Conge",
             href: "/chefdtp/monConge",
         },
 
         {
-            label: "MyEmployes",
+            label: "Mes employés",
             href: "/chefdtp/myEmploye",
         },
         {
-            label: "DemandeConge",
+            label: "Demande de Conge",
             href: "/chefdtp/listeConge",
         },
         {
-            label: "MonCalendrier",
+            label: "Mon Calendrier",
             href: "/chefdtp/monCalendrier",
         },
         {
-            label: "Planing",
+            label: "Plannification",
             href: "/chefdtp/planing",
         },
     ],

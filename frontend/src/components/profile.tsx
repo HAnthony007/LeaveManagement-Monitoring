@@ -32,7 +32,7 @@ export const MyProfile = ({ user }: viewUserProps) => {
         },
         {
             key: '4',
-            label: 'Role',
+            label: 'Rôle',
             children: user?.role
         },
         {
@@ -44,17 +44,17 @@ export const MyProfile = ({ user }: viewUserProps) => {
     const DepartementInfo: DescriptionsProps['items'] = [
         {
             key: '1',
-            label: 'Nom Departement',
+            label: 'Nom département',
             children: user?.departement?.nom_dep
         },
         {
             key: '2',
-            label: 'Code Departement',
+            label: 'Code département',
             children: user?.departement?.code_dep
         },
         {
             key: '3',
-            label: 'Chef Departement',
+            label: 'Chef département',
             children: ((user?.departement?.chef_dep?.n_matricule == user?.n_matricule) ? "Me" : user?.departement?.chef_dep?.nom_empl + " " + user?.departement?.chef_dep?.prenom_empl)
         },
     ]
@@ -79,9 +79,9 @@ export const MyProfile = ({ user }: viewUserProps) => {
     return (
         <>
             <Separator className="" />
-            <Descriptions title="User Info" layout="vertical" items={userInfo} bordered/>
-            <Descriptions title="Departement Info" layout="vertical" items={DepartementInfo} bordered />
-            <Descriptions title="Solde Info" layout="vertical" items={SoldeInfo} bordered/>
+            <Descriptions title="Information utilisateur" layout="vertical" items={userInfo} bordered/>
+            <Descriptions title="Information département" layout="vertical" items={DepartementInfo} bordered />
+            <Descriptions title="Information solde de conge" layout="vertical" items={SoldeInfo} bordered/>
         </>
     )
 }

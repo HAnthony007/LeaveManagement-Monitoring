@@ -77,7 +77,7 @@ export function DataTableRowActionsUsers({
                                     </span>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    Edit user
+                                    Modifié
                                 </TooltipContent>
                             </Tooltip>
                             <Tooltip>
@@ -89,16 +89,16 @@ export function DataTableRowActionsUsers({
                                             </AlertDialogTrigger>
                                             <AlertDialogContent>
                                                 <AlertDialogHeader>
-                                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                    <AlertDialogTitle>Vous etes telement sur ?</AlertDialogTitle>
                                                     <AlertDialogDescription>
-                                                        This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+                                                        Cette action ne peut pas etre annulée. Cela supprimera définitivement le compte de l'employé et supprimera ses données de nos serveurs.
                                                     </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
 
                                                     <AlertDialogCancel>
                                                         <Button variant={"outline"}>
-                                                            Cancel
+                                                            Annuler
                                                         </Button>
                                                     </AlertDialogCancel>
 
@@ -106,7 +106,7 @@ export function DataTableRowActionsUsers({
                                                         <Button variant={"destructive"}
                                                             onClick={handleDeleteUser}
                                                         >
-                                                            Yes, delete user
+                                                            Oui, supprimer l'utilisateur 
                                                         </Button>
                                                     </AlertDialogAction>
 
@@ -116,7 +116,7 @@ export function DataTableRowActionsUsers({
                                     </span>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    Delete user
+                                    Supprimé
                                 </TooltipContent>
 
                             </Tooltip>
@@ -160,7 +160,7 @@ export function DataTableRowActionsDepartement({
                         </span>
                     </TooltipTrigger>
                     <TooltipContent>
-                        Edit user
+                        Modifié
                     </TooltipContent>
                 </Tooltip>
                 <Tooltip>
@@ -172,16 +172,16 @@ export function DataTableRowActionsDepartement({
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                        <AlertDialogTitle>Vous etes telement sur ?</AlertDialogTitle>
                                         <AlertDialogDescription>
-                                            This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+                                        Cette action ne peut pas etre annulée. Cela supprimera définitivement cette département et supprimera ses données de nos serveurs.
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
 
                                         <AlertDialogCancel>
                                             <Button variant={"outline"}>
-                                                Cancel
+                                                Annulé
                                             </Button>
                                         </AlertDialogCancel>
 
@@ -189,7 +189,7 @@ export function DataTableRowActionsDepartement({
                                             <Button variant={"destructive"}
                                                 onClick={handleDeleteDepartement}
                                             >
-                                                Yes, delete departement
+                                                Oui, supprimer le Département
                                             </Button>
                                         </AlertDialogAction>
 
@@ -199,7 +199,7 @@ export function DataTableRowActionsDepartement({
                         </span>
                     </TooltipTrigger>
                     <TooltipContent>
-                        Delete user
+                        Supprimé
                     </TooltipContent>
 
                 </Tooltip>
@@ -259,20 +259,20 @@ export function DataTableRowActionsCongeEmploye({
                                                 <AlertDialog>
                                                     <AlertDialogTrigger asChild>
                                                         {/* <DeleteIcon /> */}
-                                                        <Button>Approve</Button>
+                                                        <Button>Apprové</Button>
                                                     </AlertDialogTrigger>
                                                     <AlertDialogContent>
                                                         <AlertDialogHeader>
-                                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                            <AlertDialogTitle>Vous etes telement sur ?</AlertDialogTitle>
                                                             <AlertDialogDescription>
-                                                                This action cannot be undone. This will permanently approve her conge from our servers.
+                                                            Cette action ne peut pas etre annulée. Cela approuvera définitivement cette congé et approuvera ses données de nos serveurs.
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
 
                                                             <AlertDialogCancel>
                                                                 <Button variant={"outline"}>
-                                                                    Cancel
+                                                                    Annulé
                                                                 </Button>
                                                             </AlertDialogCancel>
 
@@ -280,7 +280,7 @@ export function DataTableRowActionsCongeEmploye({
                                                                 <Button
                                                                     onClick={handleApproveConge}
                                                                 >
-                                                                    Yes, approve conge
+                                                                    Oui, apprové cette congé
                                                                 </Button>
                                                             </AlertDialogAction>
 
@@ -290,7 +290,7 @@ export function DataTableRowActionsCongeEmploye({
                                             </span>
                                         </TooltipTrigger>
                                         <TooltipContent>
-                                            Approve conge
+                                            Apprové
                                         </TooltipContent>
 
                                     </Tooltip>
@@ -300,20 +300,20 @@ export function DataTableRowActionsCongeEmploye({
                                                 <AlertDialog>
                                                     <AlertDialogTrigger asChild>
                                                         {/* <DeleteIcon /> */}
-                                                        <Button variant={"destructive"}>Reject</Button>
+                                                        <Button variant={"destructive"}>Rejeté</Button>
                                                     </AlertDialogTrigger>
                                                     <AlertDialogContent>
                                                         <AlertDialogHeader>
-                                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                            <AlertDialogTitle>Vous etes telement sur ?</AlertDialogTitle>
                                                             <AlertDialogDescription>
-                                                                This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+                                                            Cette action ne peut pas etre annulée. Cela rejetera définitivement cette congé et rejetera ses données de nos serveurs.
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
 
                                                             <AlertDialogCancel>
                                                                 <Button variant={"outline"}>
-                                                                    Cancel
+                                                                    Annulé
                                                                 </Button>
                                                             </AlertDialogCancel>
 
@@ -321,7 +321,7 @@ export function DataTableRowActionsCongeEmploye({
                                                                 <Button variant={"destructive"}
                                                                     onClick={handleRejectConge}
                                                                 >
-                                                                    Yes, reject conge
+                                                                    Oui, rejeté cette congé
                                                                 </Button>
                                                             </AlertDialogAction>
 
@@ -331,7 +331,7 @@ export function DataTableRowActionsCongeEmploye({
                                             </span>
                                         </TooltipTrigger>
                                         <TooltipContent>
-                                            Reject conge
+                                            Rejeté
                                         </TooltipContent>
 
                                     </Tooltip>
@@ -390,20 +390,20 @@ export function DataTableRowActionsConge({
                                                 <AlertDialog>
                                                     <AlertDialogTrigger asChild>
                                                         {/* <DeleteIcon /> */}
-                                                        <Button>Approve</Button>
+                                                        <Button>Apprové</Button>
                                                     </AlertDialogTrigger>
                                                     <AlertDialogContent>
                                                         <AlertDialogHeader>
-                                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                            <AlertDialogTitle>Vous etes telement sur ?</AlertDialogTitle>
                                                             <AlertDialogDescription>
-                                                                This action cannot be undone. This will permanently approve her conge from our servers.
+                                                            Cette action ne peut pas etre annulée. Cela approuvera définitivement cette congé et approuvera ses données de nos serveurs.
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
 
                                                             <AlertDialogCancel>
                                                                 <Button variant={"outline"}>
-                                                                    Cancel
+                                                                    Annulé
                                                                 </Button>
                                                             </AlertDialogCancel>
 
@@ -411,7 +411,7 @@ export function DataTableRowActionsConge({
                                                                 <Button
                                                                     onClick={handleApproveConge}
                                                                 >
-                                                                    Yes, approve conge
+                                                                    Oui, apprové cette congé
                                                                 </Button>
                                                             </AlertDialogAction>
 
@@ -421,7 +421,7 @@ export function DataTableRowActionsConge({
                                             </span>
                                         </TooltipTrigger>
                                         <TooltipContent>
-                                            Approve conge
+                                            Apprové
                                         </TooltipContent>
 
                                     </Tooltip>
@@ -431,20 +431,20 @@ export function DataTableRowActionsConge({
                                                 <AlertDialog>
                                                     <AlertDialogTrigger asChild>
                                                         {/* <DeleteIcon /> */}
-                                                        <Button variant={"destructive"}>Reject</Button>
+                                                        <Button variant={"destructive"}>Rejeté</Button>
                                                     </AlertDialogTrigger>
                                                     <AlertDialogContent>
                                                         <AlertDialogHeader>
-                                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                            <AlertDialogTitle>Vous etes telement sur ?</AlertDialogTitle>
                                                             <AlertDialogDescription>
-                                                                This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+                                                            Cette action ne peut pas etre annulée. Cela rejetera définitivement cette congé et rejetera ses données de nos serveurs.
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
 
                                                             <AlertDialogCancel>
                                                                 <Button variant={"outline"}>
-                                                                    Cancel
+                                                                    Annulé
                                                                 </Button>
                                                             </AlertDialogCancel>
 
@@ -452,7 +452,7 @@ export function DataTableRowActionsConge({
                                                                 <Button variant={"destructive"}
                                                                     onClick={handleRejectConge}
                                                                 >
-                                                                    Yes, reject conge
+                                                                    Oui, rejeté cette congé
                                                                 </Button>
                                                             </AlertDialogAction>
 
@@ -462,7 +462,7 @@ export function DataTableRowActionsConge({
                                             </span>
                                         </TooltipTrigger>
                                         <TooltipContent>
-                                            Reject conge
+                                            Rejeté
                                         </TooltipContent>
 
                                     </Tooltip>

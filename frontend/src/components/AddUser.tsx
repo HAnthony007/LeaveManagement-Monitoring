@@ -80,7 +80,7 @@ export const AddUser = ({ user }: addUserProps) => {
                         <DialogHeader>
                             <DialogTitle>{ user ? "Modification utilisateur" : "Ajout utilisateur"}</DialogTitle>
                             <DialogDescription>
-                                Make changes to your profile here. Click save when you&apos;re done.
+                                Ajouter tous vos information
                             </DialogDescription>
                         </DialogHeader>
 
@@ -91,11 +91,11 @@ export const AddUser = ({ user }: addUserProps) => {
                             name="id_dep"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Departement</FormLabel>
+                                    <FormLabel>Département</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value} >
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Choisisez votre departement" />
+                                                <SelectValue placeholder="Choisisez votre département" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
@@ -120,7 +120,7 @@ export const AddUser = ({ user }: addUserProps) => {
                                     <FormItem>
                                         <FormLabel>N. Matricule</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="numero matricule" {...field} />
+                                            <Input placeholder="numéro matricule" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -131,7 +131,7 @@ export const AddUser = ({ user }: addUserProps) => {
                                 name="role"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Role</FormLabel>
+                                        <FormLabel>Rôle</FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value} >
                                             <FormControl>
                                                 <SelectTrigger>
@@ -139,8 +139,8 @@ export const AddUser = ({ user }: addUserProps) => {
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="employe">Employe</SelectItem>
-                                                <SelectItem value="chefdtp">Chef de Departement</SelectItem>
+                                                <SelectItem value="employe">Employé</SelectItem>
+                                                <SelectItem value="chefdtp">Chef de Département</SelectItem>
                                                 <SelectItem value="rh">Resource humaine</SelectItem>
                                                 <SelectItem value="admin">Administrateur</SelectItem>
                                             </SelectContent>
@@ -202,7 +202,7 @@ export const AddUser = ({ user }: addUserProps) => {
                                 <FormItem>
                                     <FormLabel>Mot de Passe</FormLabel>
                                     <FormControl>
-                                        <PasswordInput placeholder="Enter your password" {...field} />
+                                        <PasswordInput placeholder="Entrer votre mot de passe" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

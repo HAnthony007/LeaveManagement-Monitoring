@@ -20,7 +20,7 @@ export const NavBar = () => {
     const { user } = useAuthStore();
     const userRole = user?.role.toLocaleLowerCase();
     const chefDTP = user?.n_matricule == user?.departement?.chef_dep?.n_matricule;
-    const role = (userRole === "admin" || isActive("/admin")) ? siteConfig.navAdmin : (userRole === "rh" || isActive("/rh")) ? siteConfig.navRH : ( userRole == "chefdtp" || isActive("/chefdtp")) ? siteConfig.navChefDTP : siteConfig.navEmploye;
+    const role = (userRole === "admin" || isActive("/admin")) ? siteConfig.navAdmin : (userRole === "rh" || isActive("/rh")) ? siteConfig.navRH : (userRole == "chefdtp" || isActive("/chefdtp")) ? siteConfig.navChefDTP : siteConfig.navEmploye;
 
     const logout = useAuthStore((state) => state.logout);
     const handleLogout = () => {
@@ -30,7 +30,7 @@ export const NavBar = () => {
         // window.location.reload();
     }
     return (
-        <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
+        <header className="sticky top-0 flex justify-between h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
             <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
                 {
                     role.map((item) => (
@@ -46,77 +46,80 @@ export const NavBar = () => {
                     ))
                 }
             </nav>
-            <Sheet>
-                <SheetTrigger asChild>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="shrink-0 md:hidden"
-                    >
-                        <Menu className="h-5 w-5" />
-                        <span className="sr-only">Toggle navigation menu</span>
-                    </Button>
-                </SheetTrigger>
-                <SheetContent side="left">
-                    <nav className="grid gap-6 text-lg font-medium">
-                        {
-                            role.map((item) => (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    className={`transition-colors hover:text-foreground 
-                                    ${isActive(item.href) ? 'text-foreground' : 'text-muted-foreground'}`
-                                    }
-                                >
-                                    {item.label}
-                                </Link>
-                            ))
-                        }
-                    </nav>
-                </SheetContent>
-            </Sheet>
-            <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-                <div>
-                </div>
-                <ToggleTheme />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="secondary" size="icon" className="relative h-8 w-8 rounded-full">
-                            <Avatar className="h-9 w-9">
-                                <AvatarImage src="/avatar.jpg" />
-                                <AvatarFallback>{user?.nom_empl.toUpperCase()[0]}.{user?.prenom_empl.toUpperCase()[0]}</AvatarFallback>
-                            </Avatar>
-                            <span className="sr-only">Toggle user menu</span>
+            <div>
+                <Sheet>
+                    <SheetTrigger asChild>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="shrink-0 md:hidden"
+                        >
+                            <Menu className="h-5 w-5" />
+                            <span className="sr-only">Toggle navigation menu</span>
                         </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel className="font-normal">
-                            <div className="flex flex-col space-y-1">
-                                <p className="text-sm font-medium leading-none">
-                                    {user?.nom_empl} {user?.prenom_empl}
-                                </p>
-                                <p className="text-xs leading-none text-muted-foreground">
-                                {
-                                    user?.email_empl
-                                }
-                                </p>
-                            </div>
-                        </DropdownMenuLabel>
-
-                        <DropdownMenuSeparator />
-
-                        <DropdownMenuItem onClick={() => router.push(`/${user?.role.toLocaleLowerCase()}/profile`)}>
-                            Your profile
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem  onClick={handleLogout}>
-                            <Button variant="ghost" >
-                                Logout
+                    </SheetTrigger>
+                    <SheetContent side="left">
+                        <nav className="grid gap-6 text-lg font-medium">
+                            {
+                                role.map((item) => (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        className={`transition-colors hover:text-foreground 
+                                    ${isActive(item.href) ? 'text-foreground' : 'text-muted-foreground'}`
+                                        }
+                                    >
+                                        {item.label}
+                                    </Link>
+                                ))
+                            }
+                        </nav>
+                    </SheetContent>
+                </Sheet>
+                <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+                    <div>
+                    </div>
+                    <ToggleTheme />
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="secondary" size="icon" className="relative h-8 w-8 rounded-full">
+                                <Avatar className="h-9 w-9">
+                                    <AvatarImage src="/avatar.jpg" />
+                                    <AvatarFallback>{user?.nom_empl.toUpperCase()[0]}.{user?.prenom_empl.toUpperCase()[0]}</AvatarFallback>
+                                </Avatar>
+                                <span className="sr-only">Toggle user menu</span>
                             </Button>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel className="font-normal">
+                                <div className="flex flex-col space-y-1">
+                                    <p className="text-sm font-medium leading-none">
+                                        {user?.nom_empl} {user?.prenom_empl}
+                                    </p>
+                                    <p className="text-xs leading-none text-muted-foreground">
+                                        {
+                                            user?.email_empl
+                                        }
+                                    </p>
+                                </div>
+                            </DropdownMenuLabel>
+
+                            <DropdownMenuSeparator />
+
+                            <DropdownMenuItem onClick={() => router.push(`/${user?.role.toLocaleLowerCase()}/profile`)}>
+                                Your profile
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleLogout}>
+                                <Button variant="ghost" >
+                                    Logout
+                                </Button>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </div>
+
         </header>
     )
 }

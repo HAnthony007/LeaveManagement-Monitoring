@@ -13,9 +13,9 @@ export default function UsersPage() {
   <div className=" h-full flex-1 flex-col space-y-1 p-8 md:flex">
       <div className="flex items-center justify-between space-y-2">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Liste des Employe</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Liste des Employés</h2>
           <p className="text-muted-foreground">
-            Voici la liste de tous les utilisateurs.
+            Voici la liste de tous les employés.
           </p>
         </div>
         <div className="flex items-center space-x-2 ">

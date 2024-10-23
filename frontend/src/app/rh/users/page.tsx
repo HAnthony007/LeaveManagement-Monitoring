@@ -16,9 +16,6 @@ export default function UsersPage() {
             Here&apos;s a list of your tasks for this month!
           </p>
         </div>
-        <div className="flex items-center space-x-2">
-          <UserNav />
-        </div>
       </div>
       <DataTable data={employes} columns={columnsUsers} />
     </div>

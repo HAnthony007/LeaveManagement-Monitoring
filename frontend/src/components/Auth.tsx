@@ -1,5 +1,5 @@
 "use client"
-import { Button } from "@/components/ui/button"
+// import { Button } from "@/components/ui/button"
 import {
     Card,
     CardContent,
@@ -14,10 +14,11 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { PasswordInput } from "./ui/input-password"
-import { Email } from "./icon/iconApp"
+import { Email, IdCard, Lock } from "./icon/iconApp"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useLogin } from "@/hooks/useAuth"
+import { Button } from "antd"
 
 export function LoginForm() {
     const goTo = useRouter();
@@ -40,12 +41,17 @@ export function LoginForm() {
         }
     }
 
+    const onFinish = async () => {
+
+    }
+
     return (
+
         <Card className="w-full max-w-sm">
             <CardHeader>
-                <CardTitle className="text-2xl">Login</CardTitle>
+                <CardTitle className="text-2xl">Bienvenue à nouveau</CardTitle>
                 <CardDescription>
-                    Enter your email below to login to your account.
+                    Entrez votre numero matricule ci-dessous pour vous connecter à votre compte.
                 </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
@@ -57,9 +63,9 @@ export function LoginForm() {
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Email</FormLabel>
+                                    <FormLabel>N.matricule</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Enter your email" {...field} suffix={<Email />}/>
+                                        <Input placeholder="Numero matricule *" {...field} suffix={<IdCard />} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -69,15 +75,15 @@ export function LoginForm() {
                             name="password"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Password</FormLabel>
+                                    <FormLabel>Mot de passe</FormLabel>
                                     <FormControl>
-                                        <PasswordInput placeholder="Enter your password" {...field} />
+                                        <PasswordInput placeholder="Mot de passe" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" className="w-full">Submit</Button>
+                        <Button type="primary" htmlType="submit" className="w-full">Submit</Button>
                     </form>
                 </Form>
             </CardContent>

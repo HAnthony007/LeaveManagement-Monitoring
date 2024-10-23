@@ -14,14 +14,14 @@ import { Tag } from "antd";
 export const columnsUsers: ColumnDef<userType>[] = [
     {
         accessorKey: "n_matricule",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Matricule" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="N.Matricule" />,
         cell: ({ row }) => <div className="w-[80px]">{row.getValue("n_matricule")}</div>,
         enableSorting: true,
         enableHiding: false,
     },
     {
         accessorKey: "nom_empl",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Nom&Prénom" />,
         cell: ({ row }) => (
             <div className="flex flex-col ">
                 <div className="max-w-[500px] truncate font-medium">
@@ -57,7 +57,7 @@ export const columnsUsers: ColumnDef<userType>[] = [
 
     {
         accessorKey: "departement",
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Departement" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Département" />,
         cell: ({ row }) => {
             const departement = row.getValue("departement") as departementType;
             return (
